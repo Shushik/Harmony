@@ -275,6 +275,8 @@
 			 * @method
 			 *
 			 * @param string tonality
+			 *
+			 * @return boolean|object
 			 */
 			main_tonality_get : function(tonality) {
 				this.all_clear();
@@ -291,7 +293,11 @@
 					// Get tonality clefs and chromatic scale
 					this.tonality_clefs_get();
 					this.chromatic_scale_get();
+
+					return this;
 				}
+
+				return false;
 			},
 
 			/**
@@ -299,6 +305,8 @@
 			 *
 			 * @public
 			 * @method
+			 *
+			 * @return boolean|string
 			 */
 			relative_tonality_get : function() {
 				if (this.main) {
@@ -310,7 +318,11 @@
 						this.relative = this.chromatic[9];
 						this.relative += 'm';
 					}
+
+					return this.relative;
 				}
+
+				return false;
 			},
 
 			/**
@@ -318,6 +330,8 @@
 			 *
 			 * @public
 			 * @method
+			 *
+			 * @return boolean|array
 			 */
 			tonality_clefs_get : function() {
 				if (this.main) {
@@ -348,7 +362,11 @@
 					if (num > 0) {
 						this.clefs.list = this._conf.clefs[type + 's'].slice(0, num);
 					}
+
+					return this.clefs.list;
 				}
+
+				return false;
 			},
 
 			/**
@@ -356,6 +374,8 @@
 			 *
 			 * @public
 			 * @method
+			 *
+			 * @return boolean|array
 			 */
 			chromatic_scale_get : function() {
 				if (this.main) {
@@ -428,6 +448,8 @@
 
 						this.chromatic.push(base[index]);
 					}
+
+					return this.chromatic;
 				}
 			},
 
@@ -438,22 +460,30 @@
 			 * @method
 			 *
 			 * @param number octaves
+			 *
+			 * @return boolean|array
 			 */
 			chromatic_scale_get_expanded : function(octaves) {
-				octaves = octaves || 2;
+				if (this.main) {
+					octaves = octaves || 2;
 
-				var
-					octave   = this.chromatic.slice(0, 12),
-					expanded = [];
+					var
+						octave   = this.chromatic.slice(0, 12),
+						expanded = [];
 
-				// Link copied chromatic scale chosen number of times
-				for (var i = 0; i < octaves; i++) {
-					expanded = expanded.concat(octave);
+					// Link copied chromatic scale chosen number of times
+					for (var i = 0; i < octaves; i++) {
+						expanded = expanded.concat(octave);
+					}
+
+					// Replace current chromatic scale with expanded
+					// chromatic scale
+					this.chromatic = expanded;
+
+					return this.chromatic;
 				}
 
-				// Replace current chromatic scale with expanded
-				// chromatic scale
-				this.chromatic = expanded;
+				return false;
 			},
 
 			/**
@@ -461,6 +491,8 @@
 			 *
 			 * @public
 			 * @method
+			 *
+			 * @return boolean|array
 			 */
 			natural_scale_get : function() {
 				if (this.main) {
@@ -489,7 +521,11 @@
 							this.chromatic[0]
 						];
 					}
+
+					return this.natural.scale;
 				}
+
+				return false;
 			},
 
 			/**
@@ -497,6 +533,8 @@
 			 *
 			 * @public
 			 * @method
+			 *
+			 * @return boolean|array
 			 */
 			harmonic_scale_get : function() {
 				if (this.main) {
@@ -525,7 +563,11 @@
 							this.chromatic[0]
 						];
 					}
+
+					return this.harmonic.scale;
 				}
+
+				return false;
 			},
 
 			/**
@@ -533,22 +575,30 @@
 			 *
 			 * @public
 			 * @method
+			 *
+			 * @return boolean|array
 			 */
 			melodic_scale_get : function() {
-				if (this.minor) {
-					this.melodic = {};
+				if (this.main) {
+					if (this.minor) {
+						this.melodic = {};
 
-					this.melodic.scale = [
-						this.chromatic[0],
-						this.chromatic[2],
-						this.chromatic[3],
-						this.chromatic[5],
-						this.chromatic[7],
-						this.chromatic[9],
-						this.chromatic[11],
-						this.chromatic[0]
-					];
+						this.melodic.scale = [
+							this.chromatic[0],
+							this.chromatic[2],
+							this.chromatic[3],
+							this.chromatic[5],
+							this.chromatic[7],
+							this.chromatic[9],
+							this.chromatic[11],
+							this.chromatic[0]
+						];
+
+						return this.melodic.scale;
+					}
 				}
+
+				return false;
 			},
 
 			/**
@@ -560,20 +610,28 @@
 			 * @method
 			 *
 			 * @param string type
+			 *
+			 * @return boolean|array
 			 */
 			tonality_degrees_get : function(type) {
-				type = type || 'natural';
+				if (this.main) {
+					type = type || 'natural';
 
-				// If the scale for chosen type doesn`t exist, build it
-				if (!this[type] || !this[type].scale) {
-					this[(type + '_scale_get')]();
+					// If the scale for chosen type doesn`t exist, build it
+					if (!this[type] || !this[type].scale) {
+						this[(type + '_scale_get')]();
+					}
+
+					// Define the degrees array
+					this[type].degrees = [];
+					this[type].degrees.tonic       = this[type].scale[0];
+					this[type].degrees.dominant    = this[type].scale[4];
+					this[type].degrees.subdominant = this[type].scale[3];
+
+					return this[type].degrees;
 				}
 
-				// Define the degrees array
-				this[type].degrees = [];
-				this[type].degrees.tonic       = this[type].scale[0];
-				this[type].degrees.dominant    = this[type].scale[4];
-				this[type].degrees.subdominant = this[type].scale[3];
+				return false;
 			},
 
 			/**
@@ -584,14 +642,21 @@
 			 * @method
 			 *
 			 * @param string type
+			 *
+			 * @return boolean|array
 			 */
 			all_degrees_get : function(type) {
-				this.tonality_degrees_get(type);
+				if (this.tonality_degrees_get(type)) {
 
-				this[type].degrees.mediant     = this[type].scale[2];
-				this[type].degrees.supertonic  = this[type].scale[1];
-				this[type].degrees.submediant  = this[type].scale[5];
-				this[type].degrees.leadingnote = this[type].scale[6];
+					this[type].degrees.mediant     = this[type].scale[2];
+					this[type].degrees.supertonic  = this[type].scale[1];
+					this[type].degrees.submediant  = this[type].scale[5];
+					this[type].degrees.leadingnote = this[type].scale[6];
+
+					return this[type].degrees;
+				}
+
+				return false;
 			},
 
 			/**
@@ -600,43 +665,53 @@
 			 * @public
 			 * @method
 			 *
-			 * @param string alias
+			 * @param string short
 			 * @param number step
+			 *
+			 * @return boolean|object
 			 */
-			interval_get : function(alias, step) {
-				step  = ((step - 0) + 12) || 12;
+			interval_get : function(short, step) {
+				if (this.main) {
+					step  = step || 0;
 
-				if (this._conf.intervals[alias]) {
 					var
-						interval = this._conf.intervals[alias];
+						real  = step + 12,
+						alias = short + '_on_' + (step + 1);
 
-					// Expand chromatic scale for dissonant intervals resolution
-					this.chromatic_scale_get_expanded(5);
+					if (this._conf.intervals[short]) {
+						var
+							interval = this._conf.intervals[short];
 
-					if (!this.intervals) {
-						// Define intervals object
-						this.intervals = {};
-					}
+						// Expand chromatic scale for dissonant intervals resolution
+						this.chromatic_scale_get_expanded(5);
 
-					if (!this.intervals[alias]) {
-						// Copy interval info
-						this.intervals[alias] = {
-							semitones : interval.semitones,
-							title     : interval.title,
-							notes     : [
-								this.chromatic[step]
-							]
-						};
-
-						// There is no second note in perfect unisone
-						// or diminished second
-						if (alias != 'P1' && alias != 'd2') {
-							this.intervals[alias].notes.push(this.chromatic[step + interval.semitones]);
+						if (!this.intervals) {
+							// Define intervals object
+							this.intervals = {};
 						}
-					}
 
-					//
+						if (!this.intervals[alias]) {
+							// Copy interval info
+							this.intervals[alias] = {
+								semitones : interval.semitones,
+								title     : interval.title,
+								notes     : [
+									this.chromatic[step]
+								]
+							};
+
+							// There is no second note in perfect unisone
+							// or diminished second
+							if (alias != 'P1' && alias != 'd2') {
+								this.intervals[alias].notes.push(this.chromatic[step + interval.semitones]);
+							}
+						}
+
+						return this.intervals[alias];
+					}
 				}
+
+				return false;
 			}
 
 		};
