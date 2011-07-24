@@ -1,4 +1,5 @@
 
+
 	/**
 	 * Harmony
 	 *
@@ -93,7 +94,6 @@
 				},
 				// Quint circle of tonalities
 				tonalities : {
-				//  alias  | number of semitones
 					'C♭'  : -7,
 					'A♭m' : -7,
 					'G♭'  : -6,
@@ -124,8 +124,120 @@
 					'D♯m' : 6,
 					'C♯'  : 7,
 					'A♯m' : 7
+				},
+				// Intervals
+				intervals : {
+					P1 : {
+						semitones : 0,
+						title     : 'perfect unison'
+					},
+					A1 : {
+						semitones : 1,
+						title     : 'augmented unison'
+					},
+					d2 : {
+						semitones : 0,
+						title     : 'diminished second'
+					},
+					m2 : {
+						semitones : 1,
+						title     : 'minor second'
+					},
+					M2 : {
+						semitones : 2,
+						title     : 'major second'
+					},
+					A2 : {
+						semitones : 3,
+						title     : 'augmented second'
+					},
+					d3 : {
+						semitones : 2,
+						title     : 'diminished third'
+					},
+					m3 : {
+						semitones : 3,
+						title     : 'minor third'
+					},
+					M3 : {
+						semitones : 4,
+						title     : 'major third'
+					},
+					A3 : {
+						semitones : 5,
+						title     : 'augmented third'
+					},
+					d4 : {
+						semitones : 4,
+						title     : 'major third'
+					},
+					P4 : {
+						semitones : 5,
+						title     : 'major third'
+					},
+					A4 : {
+						semitones : 6,
+						title     : 'augmented fourth'
+					},
+					T  : {
+						semitones : 6,
+						title     : 'tritone'
+					},
+					d5 : {
+						semitones : 6,
+						title     : 'diminished fifth'
+					},
+					P5 : {
+						semitones : 7,
+						title     : 'perfect fifth'
+					},
+					A5 : {
+						semitones : 8,
+						title     : 'augmented fifth'
+					},
+					d6 : {
+						semitones : 7,
+						title     : 'diminished sixth'
+					},
+					m6 : {
+						semitones : 8,
+						title     : 'minor sixth'
+					},
+					M6 : {
+						semitones : 9,
+						title     : 'major sixth'
+					},
+					A6 : {
+						semitones : 10,
+						title     : 'augmented sixth'
+					},
+					d7 : {
+						semitones : 9,
+						title     : 'diminished seventh'
+					},
+					m7 : {
+						semitones : 10,
+						title     : 'minor seventh'
+					},
+					M7 : {
+						semitones : 11,
+						title     : 'major seventh'
+					},
+					A7 : {
+						semitones : 12,
+						title     : 'augmented seventh'
+					},
+					d8 : {
+						semitones : 11,
+						title     : 'diminished octave'
+					},
+					P8 : {
+						semitones : 12,
+						title     : 'perfect octave'
+					},
 				}
 			},
+
 
 			/**
 			 * Clear created object properties
@@ -144,7 +256,8 @@
 						'melodic',
 						'harmonic',
 						'relative',
-						'chromatic'
+						'chromatic',
+						'intervals'
 					];
 
 				// Iterate through the object
@@ -250,8 +363,8 @@
 						check = this.clefs.list ? true : false,
 						base  = [].concat(this._conf.semitones[this.clefs.type + 's']);
 
-					// There are some double semitones in config arrays in for
-					// some tonalities where pure semitone becomes sharp or flat.
+					// There are several double semitones in config arrays for
+					// some tonalities where pure semitone becomes sharp or flat analog.
 					//
 					// These doubles shold be removed before the chromatic scale building
 					if (this.clefs.char == '♭') {
@@ -479,6 +592,52 @@
 				this[type].degrees.supertonic  = this[type].scale[1];
 				this[type].degrees.submediant  = this[type].scale[5];
 				this[type].degrees.leadingnote = this[type].scale[6];
+			},
+
+			/**
+			 * Build an interval
+			 *
+			 * @public
+			 * @method
+			 *
+			 * @param string alias
+			 * @param number step
+			 */
+			interval_get : function(alias, step) {
+				step  = ((step - 0) + 12) || 12;
+
+				if (this._conf.intervals[alias]) {
+					var
+						interval = this._conf.intervals[alias];
+
+					// Expand chromatic scale for dissonant intervals resolution
+					this.chromatic_scale_get_expanded(5);
+
+					if (!this.intervals) {
+						// Define intervals object
+						this.intervals = {};
+					}
+
+					if (!this.intervals[alias]) {
+						// Copy interval info
+						this.intervals[alias] = {
+							semitones : interval.semitones,
+							title     : interval.title,
+							notes     : [
+								this.chromatic[step]
+							]
+						};
+
+						// There is no second note in perfect unisone
+						// or diminished second
+						if (alias != 'P1' && alias != 'd2') {
+							this.intervals[alias].notes.push(this.chromatic[step + interval.semitones]);
+						}
+					}
+
+					//
+				}
 			}
 
 		};
+
