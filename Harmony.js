@@ -11,6 +11,8 @@
 	 * @constructor
 	 *
 	 * @param string tonality
+	 *
+	 * @return object
 	 */
 	function
 		Harmony(tonality) {
@@ -19,6 +21,8 @@
 			if (tonality) {
 				this.main_tonality_get(tonality);
 			}
+
+			return this;
 		}
 
 		/**
@@ -588,6 +592,25 @@
 			},
 
 			/**
+			 * Get the tonality scale of chosen type
+			 *
+			 * @public
+			 * @method
+			 *
+			 * @param string type
+			 *
+			 * @return object
+			 */
+			tonality_scale_get : function(type) {
+				type = type || 'natural';
+
+				// If the scale for chosen type doesn`t exist, build it
+				if (!this[type] || !this[type].scale) {
+					this[(type + '_scale_get')]();
+				}
+			},
+
+			/**
 			 * Get basic degrees in natural, harmonic or melodic
 			 * tonality scale. Basic degrees are: tonic, subdominant
 			 * and dominant
@@ -603,10 +626,8 @@
 				if (this.main) {
 					type = type || 'natural';
 
-					// If the scale for chosen type doesn`t exist, build it
-					if (!this[type] || !this[type].scale) {
-						this[(type + '_scale_get')]();
-					}
+					// Get the tonality scale
+					this.tonality_scale_get(type);
 
 					// Put basic degrees in array
 					this[type].degrees = [];
