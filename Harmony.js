@@ -238,7 +238,7 @@
 					P8 : {
 						semitones : 12,
 						title     : 'perfect octave'
-					},
+					}
 				}
 			},
 
