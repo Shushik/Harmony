@@ -90,7 +90,11 @@
 
 	<code>
 		console.log(Harmony.scale('C', 'harmonic', 2));
-		// ['C', 'D', 'E', 'F', 'G', 'G♯', 'B', 'C', 'D', 'E', 'F', 'G', 'G♯', 'B', 'C']
+		// [
+		// 	'C', 'D', 'E', 'F', 'G', 'G♯', 'B',
+		// 	'C', 'D', 'E', 'F', 'G', 'G♯', 'B',
+		// 	'C'
+		// ]
 	</code>
 
 	<code>
@@ -171,7 +175,11 @@
 
 	<code>
 		console.log(Harmony.chromatic('G'));
-		// ['G', 'G♯', 'A', 'A♯', 'B', 'C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G']
+		// [
+		// 	'G', 'G♯', 'A', 'A♯', 'B', 'C',
+		// 	'C♯', 'D', 'D♯', 'E', 'F', 'F♯',
+		// 	'G'
+		// ]
 	</code>
 
 	Arguments:
