@@ -1,16 +1,17 @@
 
 	Harmony, JavaScript library for the sol-fa calculations
+	Working example: http://silkleo.ru/temp/tonalities/
 
 
 	Goods
 
-	— Simple using;
-	— Methods chaining support;
-	— Indepentence from big libraries like jQuery;
-	— Building chromatic scales for the chosen tonality;
-	— Building natural, harmonic, melodic scales;
-	— Getting tonality clefs;
-	— Counting steps, intervals.
+	— Simple usage;
+	— «Static» syntax;
+	— Doesn't need any other JavaScript libraries;
+	— Builds chromatic, natural, harmonic and melodic scales;
+	— Builds intervals and chords;
+	— Gets tonality clefs and degrees;
+	— Alterates intervals.
 
 
 	System requirements
@@ -19,166 +20,137 @@
 	— Browser, which is not too old :-)
 
 
-	Code examples
+	Code examples:
 
 
-	 1. Init for the further use
-
-	<code>
-		var
-			Tonality = new Harmony;
-
-		/*
-			Some code here
-		*/
-
-		Tonality.main_tonality_get('C');
-
-		console.log(Tonality);
-	</code>
-
-	Tonality aliases table
-
-	 Alias
-	=======
-	 C♭
-	 A♭m
-	 G♭
-	 E♭m
-	 D♭
-	 H♭m
-	 A♭
-	 Fm
-	 E♭
-	 Cm
-	 H♭
-	 Gm
-	 F
-	 Dm
-	 C
-	 Am
-	 G
-	 Em
-	 D
-	 Hm
-	 A
-	 F♯m
-	 E
-	 C♯m
-	 B
-	 G♯m
-	 F♯
-	 D♯m
-	 C♯
-	 A♯m
-	=======
-
-
-	 2. Get the relative Tonality
+	1. Build a tonic triad in A minor and a «dominant» seventh in C major
 
 	<code>
-		var
-			Tonality = new Harmony('Am');
-
-		Tonality.relative_tonality_get();
-
-		console.log(Tonality);
+		console.log(Harmony.chord('Am')); // ['A', 'C', 'E']
+		console.log(Harmony.chord('C7')); // ['C', 'E', 'G', 'B♭']
 	</code>
 
+	Arguments:
 
-	 3. Expand chromatic scale for 5 octaves
+	 Argument | Value
+	==================================================================
+	 full     | Chord name (Am, C, G7, Gmaj7, F9, etc)
+	------------------------------------------------------------------
+	 type     | Type of a tonality scale (natural, harmonic, melodic)
+	==================================================================
+
+
+    2. Alter a chord or an interval from a chosen step
 
 	<code>
-		var
-			Tonality = new Harmony('Hm').chromatic_scale_get_expanded();
-
-		console.log(Tonality);
+		console.log(Harmony.chord('C6')); // ['E', 'G', 'C']
 	</code>
-
-
-	 4. Get natural, harmonic or melodic scale for chosen tonality.
-	    Melodic scale could be built for minor tonalities only
 
 	<code>
-		var
-			Tonality = new Harmony('Hm').natural_scale_get().harmonic_scale_get().melodic_scale_get();
-
-		console.log(Tonality);
+		console.log(Harmony.alter(Harmony.chord('C'), 2)); // ['E', 'G', 'C']
 	</code>
 
+	Arguments:
 
-	 5. Altername method to get tonality scale of the chosen type
+	 Argument | Value
+	==================================================================
+	 notes    | An array from Harmony.chord()
+	------------------------------------------------------------------
+	 from     | New first step
+	==================================================================
+
+
+	3. Get clefs for a chosen tonality
 
 	<code>
-		var
-			Tonality = new Harmony('Hm').tonality_scale_get('melodic');
-
-		console.log(Tonality);
+		console.log(Harmony.clefs('Fm'));
 	</code>
 
+	Arguments:
 
-	 6. Get the basic tonality degrees for the chosen type.
-	    The scale of the chosen type will be built automaticly
+	 Argument | Value
+	==================================================================
+	 tonality | Tonality name (Am, C)
+	==================================================================
+
+
+	4. Build a scale of a chosen type
 
 	<code>
-		var
-			Tonality = new Harmony('Hm').tonality_degrees_get('melodic');
-
-		console.log(Tonality);
+		console.log(Harmony.scale('C')); // ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C']
+		console.log(Harmony.scale('C', 'harmonic', 2)); // ['C', 'D', 'E', 'F', 'G', 'G♯', 'B', 'C', 'D', 'E', 'F', 'G', 'G♯', 'B', 'C']
+		console.log(Harmony.scale('Am', 'melodic')); // ["A", "B", "C", "D", "E", "F♯", "G♯", "A"]
 	</code>
 
+	Arguments:
 
-	 6. Get all the tonality degrees for the chosen type
+	 Argument | Value
+	==================================================================
+	 tonality | Tonality name (Am, C)
+	------------------------------------------------------------------
+	 type     | Type of a scale (natural, harmonic, melodic)
+	------------------------------------------------------------------
+	 octaves  | Number of octaves
+	==================================================================
+
+
+	5. Get degrees in a tonality
 
 	<code>
-		var
-			Tonality = new Harmony('Hm');
-
-		Tonality.tonality_scale_get('harmonic');
-		Tonality.all_degrees_get('harmonic');
-
-		console.log(Tonality);
+		console.log(Harmony.degrees('C')); // {tonic : 'C', mediant : 'E', dominant : 'G', submediant : 'A', supertonic : 'D', leadingnote : 'B', subdominant : 'F'}
 	</code>
 
+	Arguments:
 
-	 7. Get an interval
+	 Argument | Value
+	==================================================================
+	 tonality | Tonality name (Am, C)
+	------------------------------------------------------------------
+	 type     | Type of a scale (natural, harmonic, melodic)
+	==================================================================
+
+
+	6. Build an interval
 
 	<code>
-		var
-			Tonality = new Harmony('Hm').interval_get('m3');
-
-		console.log(Tonality);
+		console.log(Harmony.interval('Cm3')); // ['C', 'E♭']
 	</code>
 
-	Interval aliases table
+	Arguments:
 
-	 Alias | Value
-	============================
-	 P1    | perfect unison
-	 A1    | augmented unison
-	 d2    | diminished second
-	 m2    | minor second
-	 M2    | major second
-	 A2    | augmented second
-	 d3    | diminished third
-	 m3    | minor third
-	 M3    | major third
-	 A3    | augmented third
-	 d4    | major third
-	 P4    | major third
-	 A4    | augmented fourth
-	 T     | tritone
-	 d5    | diminished fifth
-	 P5    | perfect fifth
-	 A5    | augmented fifth
-	 d6    | diminished sixth
-	 m6    | minor sixth
-	 M6    | major sixth
-	 A6    | augmented sixth
-	 d7    | diminished seventh
-	 m7    | minor seventh
-	 M7    | major seventh
-	 A7    | augmented seventh
-	 d8    | diminished octave
-	 P8    |perfect octave
-	============================
+	 Argument | Value
+	==================================================================
+	 full     | Interval name (Am3, Am4aug, C6dim, Cm2)
+	------------------------------------------------------------------
+	 type     | Type of a scale (natural, harmonic, melodic)
+	==================================================================
+
+
+	7. Get a relative tonality
+
+	<code>
+		console.log(Harmony.relative('Em')); // 'G'
+	</code>
+
+	Arguments:
+
+	 Argument | Value
+	==================================================================
+	 tonality | Tonality name (Am, C)
+	==================================================================
+
+
+    8. Get a chromatic scale for a given tonality
+
+	<code>
+		console.log(Harmony.chromatic('G')); //  ['G', 'G♯', 'A', 'A♯', 'B', 'C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G']
+	</code>
+
+	Arguments:
+
+	 Argument | Value
+	==================================================================
+	 tonality | Tonality name (Am, C)
+	------------------------------------------------------------------
+	 octaves  | Number of octaves
+	==================================================================

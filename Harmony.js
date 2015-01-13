@@ -1,723 +1,818 @@
-
-
-	/**
-	 * Harmony
-	 *
-	 * JavaScript library for sol-fa calculations
-	 *
-	 * @author  Shushik <silkleopard@yandex.ru>
-	 * @version 3.0
-	 *
-	 * @constructor
-	 *
-	 * @param string tonality
-	 *
-	 * @return object
-	 */
-	function
-		Harmony(tonality) {
-			tonality = tonality || false;
-
-			if (tonality) {
-				this.main_tonality_get(tonality);
-			}
-
-			return this;
-		}
-
-		/**
-		 * Expand the main object with properties and methods
-		 */
-		Harmony.prototype = {
-
-			/**
-			 * @private
-			 * @property
-			 *
-			 * Don`t touch it :-)
-			 */
-			_conf : {
-				// Clefs
-				clefs : {
-					flat    : '♭',
-					flats   : [
-						'B',
-						'E♭',
-						'A♭',
-						'D♭',
-						'G♭',
-						'C♭',
-						'F♭'
-					],
-					sharp   : '♯',
-					sharps  : [
-						'F♯',
-						'C♯',
-						'G♯',
-						'D♯',
-						'B',
-						'E♯',
-						'H♯'
-					],
-					natural : '♮'
-				},
-				// Semitones
-				semitones : {
-					flats : [
-						'A',
-						'B',
-						'H',
-						'C♭',
-						'C',
-						'D♭',
-						'D',
-						'E♭',
-						'E',
-						'F♭',
-						'F',
-						'G♭',
-						'G',
-						'A♭'
-					],
-					sharps : [
-						'A',
-						'B',
-						'H',
-						'H♯',
-						'C',
-						'C♯',
-						'D',
-						'D♯',
-						'E',
-						'E♯',
-						'F',
-						'F♯',
-						'G',
-						'G♯'
-					]
-				},
-				// Quint circle of tonalities
-				tonalities : {
-					'C♭'  : -7,
-					'A♭m' : -7,
-					'G♭'  : -6,
-					'E♭m' : -6,
-					'D♭'  : -5,
-					'H♭m' : -5,
-					'A♭'  : -4,
-					'Fm'  : -4,
-					'E♭'  : -3,
-					'Cm'  : -3,
-					'H♭'  : -2,
-					'Gm'  : -2,
-					'F'   : -1,
-					'Dm'  : -1,
-					'C'   : 0,
-					'Am'  : 0,
-					'G'   : 1,
-					'Em'  : 1,
-					'D'   : 2,
-					'Hm'  : 2,
-					'A'   : 3,
-					'F♯m' : 3,
-					'E'   : 4,
-					'C♯m' : 4,
-					'B'   : 5,
-					'G♯m' : 5,
-					'F♯'  : 6,
-					'D♯m' : 6,
-					'C♯'  : 7,
-					'A♯m' : 7
-				},
-				// Intervals
-				intervals : {
-					P1 : {
-						semitones : 0,
-						title     : 'perfect unison'
-					},
-					A1 : {
-						semitones : 1,
-						title     : 'augmented unison'
-					},
-					d2 : {
-						semitones : 0,
-						title     : 'diminished second'
-					},
-					m2 : {
-						semitones : 1,
-						title     : 'minor second'
-					},
-					M2 : {
-						semitones : 2,
-						title     : 'major second'
-					},
-					A2 : {
-						semitones : 3,
-						title     : 'augmented second'
-					},
-					d3 : {
-						semitones : 2,
-						title     : 'diminished third'
-					},
-					m3 : {
-						semitones : 3,
-						title     : 'minor third'
-					},
-					M3 : {
-						semitones : 4,
-						title     : 'major third'
-					},
-					A3 : {
-						semitones : 5,
-						title     : 'augmented third'
-					},
-					d4 : {
-						semitones : 4,
-						title     : 'major third'
-					},
-					P4 : {
-						semitones : 5,
-						title     : 'major third'
-					},
-					A4 : {
-						semitones : 6,
-						title     : 'augmented fourth'
-					},
-					T  : {
-						semitones : 6,
-						title     : 'tritone'
-					},
-					d5 : {
-						semitones : 6,
-						title     : 'diminished fifth'
-					},
-					P5 : {
-						semitones : 7,
-						title     : 'perfect fifth'
-					},
-					A5 : {
-						semitones : 8,
-						title     : 'augmented fifth'
-					},
-					d6 : {
-						semitones : 7,
-						title     : 'diminished sixth'
-					},
-					m6 : {
-						semitones : 8,
-						title     : 'minor sixth'
-					},
-					M6 : {
-						semitones : 9,
-						title     : 'major sixth'
-					},
-					A6 : {
-						semitones : 10,
-						title     : 'augmented sixth'
-					},
-					d7 : {
-						semitones : 9,
-						title     : 'diminished seventh'
-					},
-					m7 : {
-						semitones : 10,
-						title     : 'minor seventh'
-					},
-					M7 : {
-						semitones : 11,
-						title     : 'major seventh'
-					},
-					A7 : {
-						semitones : 12,
-						title     : 'augmented seventh'
-					},
-					d8 : {
-						semitones : 11,
-						title     : 'diminished octave'
-					},
-					P8 : {
-						semitones : 12,
-						title     : 'perfect octave'
-					}
-				}
-			},
-
-
-			/**
-			 * Clear created object properties
-			 *
-			 * @public
-			 * @method
-			 */
-			all_clear : function() {
-				var
-					check = [
-						'main',
-						'minor',
-						'clefs',
-						'chords',
-						'natural',
-						'melodic',
-						'harmonic',
-						'relative',
-						'chromatic',
-						'intervals'
-					];
-
-				// Iterate through the object
-				for (var i = 0, len = check.length; i < len; i++) {
-					if (this[check[i]]) {
-						delete this[check[i]];
-					}
-				}
-			},
-
-			/**
-			 * Get the main tonality
-			 *
-			 * @public
-			 * @method
-			 *
-			 * @param string tonality
-			 *
-			 * @return object
-			 */
-			main_tonality_get : function(tonality) {
-				this.all_clear();
-
-				if (this._conf.tonalities[tonality] !== false) {
-					// Define main tonality title
-					this.main = tonality;
-
-					// Check if it`s a minor tonality
-					if (this.main.match(/m/i)) {
-						this.minor = true;
-					}
-
-					// Get tonality clefs and chromatic scale
-					this.tonality_clefs_get();
-					this.chromatic_scale_get();
-				}
-
-				return this;
-			},
-
-			/**
-			 * Get the relative tonality
-			 *
-			 * @public
-			 * @method
-			 *
-			 * @return object
-			 */
-			relative_tonality_get : function() {
-				if (this.main) {
-					if (this.minor) {
-						// If it`s a minor step 1.5 tones up from tonic
-						this.relative = this.chromatic[3];
-					} else {
-						// In other case step 1.5 tones down
-						this.relative = this.chromatic[9];
-						this.relative += 'm';
-					}
-				}
-
-				return this;
-			},
-
-			/**
-			 * Get main tonality clefs
-			 *
-			 * @public
-			 * @method
-			 *
-			 * @return object
-			 */
-			tonality_clefs_get : function() {
-				if (this.main) {
-					var
-						num  = this._conf.tonalities[this.main],
-						type = '',
-						char = '';
-
-					if (num < 0) {
-						// Flat tonality
-						num  = 0 - num;
-						type = 'flat';
-						char = '♭';
-					} else {
-						// Sharp or pure tonality
-						type = 'sharp';
-						char = '♯';
-					}
-
-					// Define clefs object
-					this.clefs = {
-						num  : num,
-						type : type,
-						char : char
-					};
-
-					// If tonality is not pure, get the clefs list
-					if (num > 0) {
-						this.clefs.list = this._conf.clefs[type + 's'].slice(0, num);
-					}
-				}
-
-				return this;
-			},
-
-			/**
-			 * Get chromatic scale
-			 *
-			 * @public
-			 * @method
-			 *
-			 * @return object
-			 */
-			chromatic_scale_get : function() {
-				if (this.main) {
-					var
-						check = this.clefs.list ? true : false,
-						base  = [].concat(this._conf.semitones[this.clefs.type + 's']);
-
-					// There are several double semitones in config arrays for
-					// some tonalities where pure semitone becomes sharp or flat analog.
-					//
-					// These doubles shold be removed before the chromatic scale building
-					if (this.clefs.char == '♭') {
-						if (
-							check &&
-							this.clefs.list.indexOf('C♭') > -1
-						) {
-							// Use «C♭» instead of «H»
-							base.splice(2, 1);
-						} else {
-							base.splice(3, 1);
-						}
-
-						if (
-							check &&
-							this.clefs.list.indexOf('F♭') > -1
-						) {
-							// Use «F♭» instead of «E»
-							base.splice(7, 1);
-						} else {
-							base.splice(8, 1);
-						}
-					} else {
-						if (
-							check &&
-							this.clefs.list.indexOf('H♯') > -1
-						) {
-							// Use «H♯» instead of «C»
-							base.splice(4, 1);
-						} else {
-							base.splice(3, 1);
-						}
-
-						if (
-							check &&
-							this.clefs.list.indexOf('E♯') > -1
-						) {
-							// Use «E♯» instead of «F»
-							base.splice(9, 1);
-						} else {
-							base.splice(8, 1);
-						}
-					}
-
-					// Clean indexes in base semitones array
-					base = base.slice(0, 12);
-
-					var
-						tonic = this.main.replace(/(^.(♯|♭)?).*/i, '$1'),
-						beg   = base.indexOf(tonic),
-						end   = (beg - 0) + 12,
-						cnt   = 0;
-
-					// Define the chromatic property
-					this.chromatic = [];
-
-					// Generate the chromatic semitones scale
-					for (var i = beg; i < end; i++) {
-						var
-							index = (i >= 12 ? i - 12 : i);
-
-						this.chromatic.push(base[index]);
-					}
-				}
-
-				return this;
-			},
-
-			/**
-			 * Expand chromatic scale
-			 *
-			 * @public
-			 * @method
-			 *
-			 * @param number octaves
-			 *
-			 * @return object
-			 */
-			chromatic_scale_get_expanded : function(octaves) {
-				if (this.main) {
-					octaves = octaves || 2;
-
-					var
-						octave   = this.chromatic.slice(0, 12),
-						expanded = [];
-
-					// Link copied chromatic scale chosen number of times
-					for (var i = 0; i < octaves; i++) {
-						expanded = expanded.concat(octave);
-					}
-
-					// Replace current chromatic scale with expanded
-					// chromatic scale
-					this.chromatic = expanded;
-				}
-
-				return this;
-			},
-
-			/**
-			 * Get natural major or minor
-			 *
-			 * @public
-			 * @method
-			 *
-			 * @return object
-			 */
-			natural_scale_get : function() {
-				if (this.main) {
-					this.natural = {};
-
-					if (this.minor) {
-						this.natural.scale = [
-							this.chromatic[0],
-							this.chromatic[2],
-							this.chromatic[3],
-							this.chromatic[5],
-							this.chromatic[7],
-							this.chromatic[8],
-							this.chromatic[10],
-							this.chromatic[0]
-						];
-					} else {
-						this.natural.scale = [
-							this.chromatic[0],
-							this.chromatic[2],
-							this.chromatic[4],
-							this.chromatic[5],
-							this.chromatic[7],
-							this.chromatic[9],
-							this.chromatic[11],
-							this.chromatic[0]
-						];
-					}
-				}
-
-				return this;
-			},
-
-			/**
-			 * Get harmonic major or minor
-			 *
-			 * @public
-			 * @method
-			 *
-			 * @return object
-			 */
-			harmonic_scale_get : function() {
-				if (this.main) {
-					this.harmonic = {};
-
-					if (this.minor) {
-						this.harmonic.scale = [
-							this.chromatic[0],
-							this.chromatic[2],
-							this.chromatic[3],
-							this.chromatic[5],
-							this.chromatic[7],
-							this.chromatic[8],
-							this.chromatic[11],
-							this.chromatic[0]
-						];
-					} else {
-						this.harmonic.scale = [
-							this.chromatic[0],
-							this.chromatic[2],
-							this.chromatic[4],
-							this.chromatic[5],
-							this.chromatic[7],
-							this.chromatic[8],
-							this.chromatic[11],
-							this.chromatic[0]
-						];
-					}
-				}
-
-				return this;
-			},
-
-			/**
-			 * Get melodic minor
-			 *
-			 * @public
-			 * @method
-			 *
-			 * @return object
-			 */
-			melodic_scale_get : function() {
-				if (this.main) {
-					if (this.minor) {
-						this.melodic = {};
-
-						this.melodic.scale = [
-							this.chromatic[0],
-							this.chromatic[2],
-							this.chromatic[3],
-							this.chromatic[5],
-							this.chromatic[7],
-							this.chromatic[9],
-							this.chromatic[11],
-							this.chromatic[0]
-						];
-					}
-				}
-
-				return this;
-			},
-
-			/**
-			 * Get the tonality scale of chosen type
-			 *
-			 * @public
-			 * @method
-			 *
-			 * @param string type
-			 *
-			 * @return object
-			 */
-			tonality_scale_get : function(type) {
-				type = type || 'natural';
-
-				// If the scale for chosen type doesn`t exist, build it
-				if (!this[type] || !this[type].scale) {
-					this[(type + '_scale_get')]();
-				}
-			},
-
-			/**
-			 * Get basic degrees in natural, harmonic or melodic
-			 * tonality scale. Basic degrees are: tonic, subdominant
-			 * and dominant
-			 *
-			 * @public
-			 * @method
-			 *
-			 * @param string type
-			 *
-			 * @return object
-			 */
-			tonality_degrees_get : function(type) {
-				if (this.main) {
-					type = type || 'natural';
-
-					// Get the tonality scale
-					this.tonality_scale_get(type);
-
-					// Put basic degrees in array
-					this[type].degrees = [];
-					this[type].degrees.tonic       = this[type].scale[0];
-					this[type].degrees.dominant    = this[type].scale[4];
-					this[type].degrees.subdominant = this[type].scale[3];
-				}
-
-				return this;
-			},
-
-			/**
-			 * Get all degrees in natural, harmonic or melodic
-			 * tonality scale
-			 *
-			 * @public
-			 * @method
-			 *
-			 * @param string type
-			 *
-			 * @return object
-			 */
-			all_degrees_get : function(type) {
-				type = type || 'natural';
-
-				this.tonality_degrees_get(type);
-
-				if (this[type].degrees) {
-					// Put other degrees in array
-					this[type].degrees.mediant     = this[type].scale[2];
-					this[type].degrees.supertonic  = this[type].scale[1];
-					this[type].degrees.submediant  = this[type].scale[5];
-					this[type].degrees.leadingnote = this[type].scale[6];
-				}
-
-				return this;
-			},
-
-			/**
-			 * Build an interval
-			 *
-			 * @public
-			 * @method
-			 *
-			 * @param string short
-			 * @param number step
-			 *
-			 * @return object
-			 */
-			interval_get : function(short, step) {
-				if (this.main) {
-					step  = step || 0;
-
-					var
-						real  = step + 12,
-						alias = short + '_on_' + (step + 1);
-
-					if (this._conf.intervals[short]) {
-						var
-							interval = this._conf.intervals[short];
-
-						// Expand chromatic scale for dissonant intervals resolution
-						this.chromatic_scale_get_expanded(5);
-
-						if (!this.intervals) {
-							// Define intervals object
-							this.intervals = {};
-						}
-
-						if (!this.intervals[alias]) {
-							// Copy interval info
-							this.intervals[alias] = {
-								semitones : interval.semitones,
-								title     : interval.title,
-								notes     : [
-									this.chromatic[step]
-								]
-							};
-
-							// There is no second note in perfect unisone
-							// or diminished second
-							if (alias != 'P1' && alias != 'd2') {
-								this.intervals[alias].notes.push(this.chromatic[step + interval.semitones]);
-							}
-						}
-					}
-				}
-
-				return this;
-			}
-
-		};
-
+/**
+ * Harmony
+ *
+ * JavaScript library for sol-fa calculations
+ *
+ * @author  Shushik <silkleopard@yandex.ru>
+ * @version 4.0
+ */
+;var Harmony = Harmony || (function() {
+
+    /**
+     * @constructor
+     *
+     * Static properties and methods
+     *
+     * @property _flat
+     * @property _bekar
+     * @property _sharp
+     * @function _chord
+     * @function _index
+     * @function _minor
+     * @function _tonality
+     * @function _modifiers
+     * @function alter
+     * @function chord
+     * @function clefs
+     * @function scale
+     * @function degrees
+     * @function interval
+     * @function relative
+     * @function chromatic
+     * @function tonalities
+     *
+     * @param {string}           tonality
+     * @param {undefined|number} octaves
+     *
+     * @return {object}
+     */
+    function
+        self(tonality, octaves) {
+            if (!(this instanceof self)) {
+                return new self(tonality, octaves);
+            }
+
+            this.init(tonality, octaves);
+        }
+
+    /**
+     * Instance properties and methods
+     *
+     * @property main
+     * @property type
+     * @property clefs
+     * @property major
+     * @property minor
+     * @property melodic
+     * @property natural
+     * @property harmonic
+     * @property relative
+     * @property chromatic
+     * @function init
+     */
+    self.prototype = {};
+
+    /**
+     * Build the tonality
+     *
+     * @param {string} tonality
+     * @param {number} octaves
+     */
+    self.prototype.init = function(tonality, octaves) {
+        tonality = self._tonality(tonality);
+        octaves  = typeof octaves == 'number' && octaves > 1 ? octaves : 0;
+
+        var
+            type   = self._minor(tonality, true) ? 'minor' : 'major',
+            degree = '';
+
+        /**
+         * Minor or major
+         *
+         * @type {boolean}
+         */
+        this[type] = true;
+
+        /**
+         * Name of the main tonality
+         *
+         * @type {string}
+         */
+        this.main = self._tonality(tonality, true);
+
+        /**
+         * Type of the tonality
+         *
+         * @type {string}
+         */
+        this.type = type;
+
+        /**
+         * Name of the relative tonality
+         *
+         * @type {string}
+         */
+        this.relative = self.relative(this.main, true);
+
+        /**
+         * Clefs of the tonality
+         *
+         * @type {object}
+         */
+        this.clefs = self.clefs(this.main, true);
+
+        /**
+         * Scale and degrees for natural harmony
+         *
+         * @type {object}
+         */
+        this.natural = {
+            scale   : self.scale(this.main, 'natural', octaves),
+            degrees : self.degrees(this.main, 'natural')
+        }
+
+
+        /**
+         * Scale and degrees for harmonic harmony
+         *
+         * @type {object}
+         */
+        this.harmonic = {
+            scale   : self.scale(this.main, 'harmonic', octaves),
+            degrees : self.degrees(this.main, 'harmonic')
+        }
+
+        /**
+         * Scale and degrees for melodic harmony (minor only)
+         *
+         * @type {object}
+         */
+        if (this.minor) {
+            this.melodic = {
+                scale   : self.scale(this.main, 'melodic', octaves),
+                degrees : self.degrees(this.main, 'melodic')
+            }
+        }
+
+        /**
+         * Chromatic scale
+         *
+         * @type {object}
+         */
+        this.chromatic = self.chromatic(this.main, octaves);
+    }
+
+    /**
+     * Flat sign
+     *
+     * @static
+     * @private
+     *
+     * @type {string}
+     */
+    self._flat = '♭';
+
+    /**
+     * Bekar sign
+     *
+     * @static
+     * @private
+     *
+     * @type {string}
+     */
+    self._bekar = '♮';
+
+    /**
+     * Sharp sign
+     *
+     * @static
+     * @private
+     *
+     * @type {string}
+     */
+    self._sharp = '♯';
+
+    /**
+     * Extract the chord or interval
+     *
+     * @static
+     * @private
+     *
+     * @param {string} str
+     *
+     * @return {string}
+     */
+    self._chord = function(str) {
+        return str.replace(/^[A-H][♭♯]?/, '');
+    }
+
+    /**
+     * indexOf alias for IE8 mostly
+     *
+     * @static
+     * @private
+     *
+     * @param {string} hayfork
+     * @param {object} haystack
+     *
+     * @return {number}
+     */
+    self._index = function(hayfork, haystack) {
+        var
+            straw  = 0,
+            straws = 0;
+
+        // Filter non-arrays
+        if (haystack instanceof Array) {
+            // Check the built-in method existance
+            if (haystack.indexOf) {
+                // Use built-in method
+                return haystack.indexOf(hayfork);
+            } else {
+                // Use custom method
+                straws = haystack.length;
+
+                // Search in array
+                for (; straw < straws; straw++) {
+                    if (haystack[straw] === hayfork) {
+                        return straw;
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * Check if the tonality is minor or not
+     *
+     * @static
+     * @private
+     *
+     * @param {string}            str
+     * @param {undefined|boolean} _tech
+     *
+     * @return {boolean}
+     */
+    self._minor = function(str, _tech) {
+        str = _tech ? str : self._tonality(str);
+
+        return str.match(/^\D{1,2}m/) ? true : false;
+    }
+
+    /**
+     * Extract the tonality, replace #, b, H and italic names
+     *
+     * @static
+     * @private
+     *
+     * @param {string} str
+     *
+     * @return {string}
+     */
+    self._tonality = function(str) {
+        str = typeof str == 'string' ? str : 'Am';
+
+        var
+            name = str.match(/^([A-H][b#♭♯]?m?(aj)?)/);
+
+        // No tonality name pattern found
+        if (!name) {
+            return 'Am';
+        }
+
+        name = name.
+               shift().
+               replace(/maj/, '').
+               replace(/#/, self._sharp).
+               replace(/b/, self._flat).
+               replace(/H/, 'B');
+
+        return name;
+    }
+
+    /**
+     * Extract the chord or interval modifiers
+     *
+     * @static
+     * @private
+     *
+     * @param {string} str
+     *
+     * @return {object}
+     */
+    self._modifiers = function(str) {
+        return str.match(/(\+|\-|\/|add|aug|dim|maj|sus)(\d{0,2})/g);
+    }
+
+    /**
+     * Build a chord in a given tonality
+     *
+     * @static
+     *
+     * @param {string}           full
+     * @param {undefined|string} type
+     *
+     * @return {string|object}
+     */
+    self.chord = function(full, type) {
+        var
+            minor     = false,
+            loop      = 0,
+            step      = 0,
+            alter     = 0,
+            make      = '',
+            chord     = '',
+            tonality  = self._tonality(full),
+            scale     = self.scale(tonality, type, 2, true),
+            schema    = [0],
+            chromatic = self.chromatic(tonality, 2, true).split(','),
+            modifiers = null;
+
+        // Get a clean chord name
+        minor = self._minor(tonality);
+        chord = self._chord(full);
+
+        // Add the upper semitones for triad
+        schema[1] = self._index(scale[2], chromatic);
+        schema[2] = self._index(scale[4], chromatic);
+
+        // Add the steps for the non-triad chords
+        step = chord.match(/^(m?(m?aj)?)?(65|64|34|9|7|6|4|2)/);
+
+        if (step) {
+            step = step[3];
+
+            // 
+            if (step == 6 || step == 65) {
+                alter = 2;
+            } else if (step == 64 || step == 34) {
+                alter = 3;
+            } else if (step == 2) {
+                alter = 4;
+            }
+
+            // Seventh or alterations
+            if (step != 6 && step != 64) {
+                schema[3] = self._index(scale[6], chromatic) -
+                            (minor || step != 7 ? 0 : 1);
+            }
+
+            // Nineth or alterations
+            if (step == 9) {
+                schema[4] = self._index(scale[8], chromatic);
+            }
+        }
+
+        // Parse the chord modifiers
+        modifiers = self._modifiers(chord);
+
+        if (modifiers) {
+            loop = modifiers.length;
+
+            // Append modifiers
+            while (--loop > -1) {
+                make = modifiers[loop].replace(/\d+/, '');
+                step = modifiers[loop].replace(/\D*/, '');
+
+                // The «add» case has it's own steps behavior
+                if (make == '/' || make == 'add') {
+                    step = step - 0 + 1;
+                    step = isNaN(step) ? 0 : step;
+                } else {
+                    step = (step ? step - 2 : (schema.length - 1));
+                    step = step - Math.ceil(step / 3);
+                }
+
+                // Choose an modifier type
+                switch (make) {
+
+                    // Augment
+                    case '+':
+                    case 'aug':
+                    case 'maj':
+                        schema[step] = schema[step] + 1;
+                    break;
+
+                    // Diminish
+                    case '-':
+                    case 'dim':
+                        schema[step] = schema[step] - 1;
+                    break;
+
+                    // Add
+                    case '/':
+                    case 'add':
+                        schema.push(chromatic[self._index(scale[step], chromatic)]);
+                    break;
+
+                    // Suspend
+                    case 'sus':
+                        if (step === 0) {
+                            schema[1] = schema[1] - 1;
+                        } else {
+                            schema[1] = schema[1] + 1;
+                        }
+                    break;
+
+                }
+            }
+        }
+
+        // Fill the chord schema with the semitones values
+        loop = schema.length;
+
+        while (--loop > -1) {
+            schema[loop] = chromatic[schema[loop]];
+        }
+
+        if (alter) {
+            return self.alter(schema, alter);
+        }
+
+        return schema;
+    }
+
+    /**
+     * Alter the chord or the interval
+     *
+     * @static
+     *
+     * @param {object} notes
+     * @param {number} from
+     *
+     * @return {string|object}
+     */
+    self.alter = function(notes, from) {
+        if (typeof notes != 'object') {
+            return null;
+        }
+
+        var
+            step = from - 1;
+
+        return [].concat(notes.slice(step), notes.slice(0, step));
+    }
+
+    /**
+     * Get the clefs list
+     *
+     * @static
+     *
+     * @param {string}            tonality
+     * @param {undefined|boolean} _tech
+     *
+     * @return {string|object}
+     */
+    self.clefs = function(tonality, _tech) {
+        tonality = _tech ? tonality : self._tonality(tonality);
+
+        var
+            clefs = self.tonalities(true)[tonality],
+            cut   = '',
+                notes = (clefs < 0 ? 'B♭,E♭,A♭,D♭,G♭,C♭,F♭' : 'F♯,C♯,G♯,D♯,A♯,E♯,B♯');
+
+        // Get a slice
+        if (clefs) {
+            cut = notes.match(new RegExp(
+                '(([^,]+,?){' + (clefs < 0 ? (clefs * -1) : clefs) + '})'
+            ))[0].replace(/,$/, '');
+        }
+
+        // Return the result as a string
+        if (_tech) {
+            return cut;
+        }
+
+        return cut ? cut.split(',') : [];
+    }
+
+    /**
+     * Build an interval from a given tonic
+     *
+     * @static
+     *
+     * @param {string|object}     tonality
+     * @param {string}            type
+     * @param {number}            octaves
+     * @param {undefined|boolean} _tech
+     *
+     * @return {object}
+     */
+    self.scale = function(tonality, type, octaves, _tech) {
+        type     = typeof type == 'string' && type.match(/^(natural|harmonic|melodic)$/) ?
+                   type :
+                   'natural';
+        octaves  = octaves || 1;
+        tonality = _tech ? tonality : self._tonality(tonality);
+
+        var
+            minor     = self._minor(tonality),
+            step      = 0,
+            octave    = octaves - 1,
+            schema    = minor ? '0,2,3,5,7,8,10' : '0,2,4,5,7,9,11',
+            chromatic = self.chromatic(tonality, 1, false, true);
+
+        // Change the schema for non-natural types of scales
+        switch (type) {
+
+            // Harmonic minor and major
+            case 'harmonic':
+                if (minor) {
+                    schema = schema.replace(/10/, '11');
+                } else {
+                    schema = schema.replace(/9/, '8');
+                }
+            break;
+
+            // Harmonic minor only
+            case 'melodic':
+                if (minor) {
+                    schema = schema.replace(/8/, '9');
+                    schema = schema.replace(/10/, '11');
+                }
+            break;
+
+        }
+
+        // Transform steps list into array and get its length
+        schema = schema.split(',');
+        step   = schema.length;
+
+        // Replace steps positions with the semitones
+        while (--step > -1) {
+            schema[step] = chromatic[schema[step]];
+        }
+
+        // Add needed number of octaves
+        if (octave > 0) {
+            while (--octave > -1) {
+                schema = schema.concat(schema.slice(0, 7));
+            }
+        }
+
+        // Add the last note
+        schema.push(schema[0]);
+
+        return schema;
+    }
+
+    /**
+     * Tonalities degrees
+     *
+     * @static
+     *
+     * @param {string}            tonality
+     * @param {undefined|string}  type
+     * @param {undefined|boolean} _tech
+     *
+     * @return {object}
+     */
+    self.degrees = function(tonality, type, _tech) {
+        tonality = _tech ? tonality : self._tonality(tonality);
+
+        var
+            name   = '',
+            scale  = self.scale(tonality, type, 1, true),
+            schema = {
+                         tonic       : 0,
+                         mediant     : 2,
+                         dominant    : 4,
+                         submediant  : 5,
+                         supertonic  : 1,
+                         leadingnote : 6,
+                         subdominant : 3
+                     };
+
+        // Insert semitones values into schema
+        for (name in schema) {
+            schema[name] = scale[schema[name]]
+        }
+
+        return schema;
+    }
+
+    /**
+     * Build an interval from a given tonic
+     *
+     * @static
+     *
+     * @param {string}            full
+     * @param {undefined|boolean} type
+     *
+     * @return {object}
+     */
+    self.interval = function(full, type) {
+        var
+            minor     = false,
+            loop      = 0,
+            step      = 0,
+            interval  = '',
+            tonality  = self._tonality(full),
+            scale     = self.scale(tonality, type, 2, true),
+            schema    = [0],
+            chromatic = self.chromatic(tonality, 2, true).split(','),
+            modifiers = null;
+
+        minor     = self._minor(tonality);
+        interval  = self._chord(full);
+        modifiers = self._modifiers(interval);
+        step      = interval.match(/^(m?)(\d{1,2})/);
+        step      = step ? step[2] - 1 : 0;
+
+        // For non single tone intervals
+        if (step > 0) {
+            // Add the upper semitone position
+            schema[1] = self._index(scale[step], chromatic);
+
+            if (modifiers) {
+                // It's not a chord so there's no need to have
+                // more than one modifier
+                modifiers = modifiers[0];
+
+                // Choose an modifier type
+                switch (modifiers) {
+
+                    case '+':
+                    case 'aug':
+                        schema[1] = schema[1] + 1;
+                    break;
+
+                    // Diminish
+                    case '-':
+                    case 'dim':
+                        schema[1] = schema[1] - 1;
+                    break;
+
+                }
+            }
+        }
+
+        // Iterate through the interval semitones
+        loop = schema.length;
+
+        while (--loop > -1) {
+            schema[loop] = chromatic[schema[loop]];
+        }
+
+        return schema;
+    }
+
+    /**
+     * Get a relative tonality
+     *
+     * @static
+     *
+     * @param {string}            tonality
+     * @param {undefined|boolean} _tech
+     *
+     * @return {string}
+     */
+    self.relative = function(tonality, _tech) {
+        tonality = _tech ? tonality : self._tonality(tonality);
+
+        var
+            chromatic = self.chromatic(tonality, 1, true).split(',');
+
+        // If minor tonality
+        if (self._minor(tonality)) {
+            return chromatic[3];
+        }
+
+        return chromatic[9] + 'm';
+    }
+
+    /**
+     * Get the 12 chromatic semitones
+     *
+     * @static
+     *
+     * @param {string}            tonality
+     * @param {number}            octaves
+     * @param {undefined|boolean} _tech
+     *
+     * @return {string|object}
+     */
+    self.chromatic = function(tonality, octaves, _tech) {
+        octaves  = (typeof octaves == 'number' && octaves > 0) ?
+                   octaves :
+                   1;
+        tonality = _tech ? tonality : self._tonality(tonality);
+
+        var
+            crop  = 0,
+            check = self.tonalities(true)[tonality] < 0 ? true : false,
+            clefs = self.clefs(tonality, true),
+            scale = check ?
+                    'A,B♭,B,C♭,C,D♭,D,E♭,E,F♭,F,G♭,G,A♭' :
+                    'A,A♯,B,B♯,C,C♯,D,D♯,E,E♯,F,F♯,G,G♯',
+            tonic = tonality.replace(/m/, '');
+
+        if (check) {
+            // Remove B or C flat
+            if (clefs && clefs.indexOf('C♭') > -1) {
+                scale = scale.replace('B,', '');
+            } else {
+                scale = scale.replace('C♭,', '');
+            }
+
+            // Remove F flat or E
+            if (clefs && clefs.indexOf('F♭') > -1) {
+                scale = scale.replace('E,', '');
+            } else {
+                scale = scale.replace('F♭', '');
+            }
+        } else {
+            // Remove C or B sharp
+            if (clefs && clefs.indexOf('B♯') > -1) {
+                scale = scale.replace('C,', '');
+            } else {
+                scale = scale.replace('B♯,', '');
+            }
+
+            // Remove F or E sharp
+            if (clefs && clefs.indexOf('E♯') > -1) {
+                scale = scale.replace('F,', '');
+            } else {
+                scale = scale.replace('E♯,', '');
+            }
+        }
+
+        // Get a tonic position and build a chromatic scale from a tonic
+        crop  = scale.indexOf(tonic);
+        scale = (scale.substring(crop) + ',' + scale.substring(0, crop)).
+                replace(/,$/, '').replace(/,,/, ',');
+
+        // Add needed number of octaves
+        if (octaves > 1) {
+            crop = scale.length;
+
+            while (--octaves > 0) {
+                scale += ',' + scale.substring(0, crop);
+            }
+        }
+
+        // Add the ending tonic
+        scale += ',' + tonic;
+
+        // Return the result as a string
+        if (_tech) {
+            return scale;
+        }
+
+        // Return the result as an array
+        return scale.split(',');
+    }
+
+    /**
+     * Get a quint circle
+     *
+     * @static
+     *
+     * @param {undefined|boolean} _tech
+     *
+     * @return {object}
+     */
+    self.tonalities = function(_tech) {
+        var
+            tonality   = '',
+            tonalities = {
+                             'C♭'  : -7,
+                             'A♭m' : -7,
+                             'G♭'  : -6,
+                             'E♭m' : -6,
+                             'D♭'  : -5,
+                             'B♭m' : -5,
+                             'A♭'  : -4,
+                             'Fm'  : -4,
+                             'E♭'  : -3,
+                             'Cm'  : -3,
+                             'B♭'  : -2,
+                             'Gm'  : -2,
+                             'F'   : -1,
+                             'Dm'  : -1,
+                             'C'   : 0,
+                             'Am'  : 0,
+                             'G'   : 1,
+                             'Em'  : 1,
+                             'D'   : 2,
+                             'Bm'  : 2,
+                             'A'   : 3,
+                             'F♯m' : 3,
+                             'E'   : 4,
+                             'C♯m' : 4,
+                             'A♯'  : 5,
+                             'G♯m' : 5,
+                             'F♯'  : 6,
+                             'D♯m' : 6,
+                             'C♯'  : 7,
+                             'A♯m' : 7
+                         };
+
+        // Return the number of clefs
+        if (_tech) {
+            return tonalities;
+        }
+
+        // Get the clefs lists for all tonalities
+        for (tonality in tonalities) {
+            tonalities[tonality] = tonalities[tonality] ? self.clefs(tonality) : [];
+        }
+
+        return tonalities;
+    }
+
+    return self;
+
+})();
