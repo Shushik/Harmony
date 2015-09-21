@@ -30,127 +30,10 @@
      * @function relative
      * @function chromatic
      * @function tonalities
-     *
-     * @param {string}           tonality
-     * @param {undefined|number} octaves
-     *
-     * @return {object}
      */
     function
-        self(tonality, octaves) {
-            if (!(this instanceof self)) {
-                return new self(tonality, octaves);
-            }
-
-            this.init(tonality, octaves);
+        self() {
         }
-
-    /**
-     * Instance properties and methods
-     *
-     * @property main
-     * @property type
-     * @property clefs
-     * @property major
-     * @property minor
-     * @property melodic
-     * @property natural
-     * @property harmonic
-     * @property relative
-     * @property chromatic
-     * @function init
-     */
-    self.prototype = {};
-
-    /**
-     * Build the tonality
-     *
-     * @param {string} tonality
-     * @param {number} octaves
-     */
-    self.prototype.init = function(tonality, octaves) {
-        tonality = self._tonality(tonality);
-        octaves  = typeof octaves == 'number' && octaves > 1 ? octaves : 0;
-
-        var
-            type   = self._minor(tonality, true) ? 'minor' : 'major',
-            degree = '';
-
-        /**
-         * Minor or major
-         *
-         * @type {boolean}
-         */
-        this[type] = true;
-
-        /**
-         * Name of the main tonality
-         *
-         * @type {string}
-         */
-        this.main = self._tonality(tonality, true);
-
-        /**
-         * Type of the tonality
-         *
-         * @type {string}
-         */
-        this.type = type;
-
-        /**
-         * Name of the relative tonality
-         *
-         * @type {string}
-         */
-        this.relative = self.relative(this.main, true);
-
-        /**
-         * Clefs of the tonality
-         *
-         * @type {object}
-         */
-        this.clefs = self.clefs(this.main, true);
-
-        /**
-         * Scale and degrees for natural harmony
-         *
-         * @type {object}
-         */
-        this.natural = {
-            scale   : self.scale(this.main, 'natural', octaves),
-            degrees : self.degrees(this.main, 'natural')
-        }
-
-
-        /**
-         * Scale and degrees for harmonic harmony
-         *
-         * @type {object}
-         */
-        this.harmonic = {
-            scale   : self.scale(this.main, 'harmonic', octaves),
-            degrees : self.degrees(this.main, 'harmonic')
-        }
-
-        /**
-         * Scale and degrees for melodic harmony (minor only)
-         *
-         * @type {object}
-         */
-        if (this.minor) {
-            this.melodic = {
-                scale   : self.scale(this.main, 'melodic', octaves),
-                degrees : self.degrees(this.main, 'melodic')
-            }
-        }
-
-        /**
-         * Chromatic scale
-         *
-         * @type {object}
-         */
-        this.chromatic = self.chromatic(this.main, octaves);
-    }
 
     /**
      * Flat sign
@@ -181,6 +64,24 @@
      * @type {string}
      */
     self._sharp = '♯';
+
+    /**
+     * Extract the type of the scale
+     *
+     * @static
+     * @private
+     *
+     * @param {string} str
+     *
+     * @return {string}
+     */
+    self._type = function(str) {
+        return (
+            typeof type == 'string' && type.match(/^(natural|harmonic|melodic)$/) ?
+            type :
+            'natural'
+        );
+    }
 
     /**
      * Extract the chord or interval
@@ -297,6 +198,33 @@
     }
 
     /**
+     * 
+     *
+     * @static
+     * @private
+     *
+     * @param {string} modify
+     * @param {string} modify
+     *
+     * @return {object}
+     */
+    self._change = function(semitone, modify) {
+        if (modify == 'aug') {
+            if (semitone.match(self._flat)) {
+                return semitone.replace(self._flat, self._bekar);
+            } else {
+                return semitone + self._sharp;
+            }
+        } else if (modify == 'dim') {
+            if (semitone.match(self._sharp)) {
+                return semitone.replace(self._sharp, self._bekar);
+            } else {
+                return semitone + self._flat;
+            }
+        }
+    }
+
+    /**
      * Build a chord in a given tonality
      *
      * @static
@@ -305,6 +233,13 @@
      * @param {undefined|string} type
      *
      * @return {string|object}
+     *
+     * http://music-education.ru/tri-vida-mazhora/
+     * http://music-education.ru/tri-vida-minora/
+     *
+     * http://www.music-theory.ru/index.php?option=com_content&view=article&id=174&Itemid=244&lang=ru
+     * http://www.music-theory.ru/index.php?option=com_content&view=article&id=45&Itemid=248&lang=ru
+     * http://www.music-theory.ru/index.php?option=com_content&view=article&id=54&Itemid=249&lang=ru
      */
     self.chord = function(full, type) {
         var
@@ -316,6 +251,7 @@
             chord     = '',
             tonality  = self._tonality(full),
             scale     = self.scale(tonality, type, 2, true),
+            change    = {},
             schema    = [0],
             chromatic = self.chromatic(tonality, 2, true).split(','),
             modifiers = null;
@@ -325,8 +261,8 @@
         chord = self._chord(full);
 
         // Add the upper semitones for triad
-        schema[1] = self._index(scale[2], chromatic);
-        schema[2] = self._index(scale[4], chromatic);
+        schema[1] = minor ? 3 : 4;
+        schema[2] = 7;
 
         // Add the steps for the non-triad chords
         step = chord.match(/^(m?(m?aj)?)?(65|64|34|9|7|6|4|2)/);
@@ -334,7 +270,7 @@
         if (step) {
             step = step[3];
 
-            // 
+            // For alterated chords
             if (step == 6 || step == 65) {
                 alter = 2;
             } else if (step == 64 || step == 34) {
@@ -345,14 +281,19 @@
 
             // Seventh or alterations
             if (step != 6 && step != 64) {
-                schema[3] = self._index(scale[6], chromatic) -
-                            (minor || step != 7 ? 0 : 1);
+                if (self._type(type) != 'natural') {
+                    schema[3] = minor ? 11 : 9;
+                } else {
+                    schema[3] = 10;
+                }
             }
 
             // Nineth or alterations
+/*
             if (step == 9) {
                 schema[4] = self._index(scale[8], chromatic);
             }
+*/
         }
 
         // Parse the chord modifiers
@@ -364,12 +305,12 @@
             // Append modifiers
             while (--loop > -1) {
                 make = modifiers[loop].replace(/\d+/, '');
-                step = modifiers[loop].replace(/\D*/, '');
+                step = modifiers[loop].replace(/\D*/, '') - 0;
 
                 // The «add» case has it's own steps behavior
                 if (make == '/' || make == 'add') {
-                    step = step - 0 + 1;
-                    step = isNaN(step) ? 0 : step;
+                    step = step + 1;
+                    step = !isNaN(step) ? step : schema.length;
                 } else {
                     step = (step ? step - 2 : (schema.length - 1));
                     step = step - Math.ceil(step / 3);
