@@ -9,39 +9,18 @@
 ;var Harmony = Harmony || (function() {
 
     /**
-     * @constructor
+     * @namespace Harmony
      *
      * Static properties and methods
-     *
-     * @property _flat
-     * @property _bekar
-     * @property _sharp
-     * @function _chord
-     * @function _index
-     * @function _minor
-     * @function _tonality
-     * @function _modifiers
-     * @function alter
-     * @function chord
-     * @function clefs
-     * @function scale
-     * @function degrees
-     * @function interval
-     * @function relative
-     * @function chromatic
-     * @function tonalities
      */
-    function
-        self() {
-        }
+    var self = {}
 
     /**
      * Flat sign
      *
      * @static
      * @private
-     *
-     * @type {string}
+     * @member {string} _flat
      */
     self._flat = '♭';
 
@@ -50,8 +29,7 @@
      *
      * @static
      * @private
-     *
-     * @type {string}
+     * @member {string} _bekar
      */
     self._bekar = '♮';
 
@@ -60,8 +38,7 @@
      *
      * @static
      * @private
-     *
-     * @type {string}
+     * @member {string} _sharp
      */
     self._sharp = '♯';
 
@@ -70,10 +47,11 @@
      *
      * @static
      * @private
+     * @method _type
      *
      * @param {string} str
      *
-     * @return {string}
+     * @returns {string}
      */
     self._type = function(str) {
         return (
@@ -88,51 +66,14 @@
      *
      * @static
      * @private
+     * @method _chord
      *
      * @param {string} str
      *
-     * @return {string}
+     * @returns {string}
      */
     self._chord = function(str) {
         return str.replace(/^[A-H][♭♯]?/, '');
-    }
-
-    /**
-     * indexOf alias for IE8 mostly
-     *
-     * @static
-     * @private
-     *
-     * @param {string} hayfork
-     * @param {object} haystack
-     *
-     * @return {number}
-     */
-    self._index = function(hayfork, haystack) {
-        var
-            straw  = 0,
-            straws = 0;
-
-        // Filter non-arrays
-        if (haystack instanceof Array) {
-            // Check the built-in method existance
-            if (haystack.indexOf) {
-                // Use built-in method
-                return haystack.indexOf(hayfork);
-            } else {
-                // Use custom method
-                straws = haystack.length;
-
-                // Search in array
-                for (; straw < straws; straw++) {
-                    if (haystack[straw] === hayfork) {
-                        return straw;
-                    }
-                }
-            }
-        }
-
-        return -1;
     }
 
     /**
@@ -140,11 +81,12 @@
      *
      * @static
      * @private
+     * @method _minor
      *
-     * @param {string}            str
-     * @param {undefined|boolean} _tech
+     * @param {string}   str
+     * @param {boolean=} _tech
      *
-     * @return {boolean}
+     * @returns {boolean}
      */
     self._minor = function(str, _tech) {
         str = _tech ? str : self._tonality(str);
@@ -153,14 +95,43 @@
     }
 
     /**
+     * 
+     *
+     * @static
+     * @private
+     * @method _change
+     *
+     * @param {string} semitone
+     * @param {string} modify
+     *
+     * @return {object}
+     */
+    self._change = function(semitone, modify) {
+        if (modify == 'aug') {
+            if (semitone.match(self._flat)) {
+                return semitone.replace(self._flat, self._bekar);
+            } else {
+                return semitone + self._sharp;
+            }
+        } else if (modify == 'dim') {
+            if (semitone.match(self._sharp)) {
+                return semitone.replace(self._sharp, self._bekar);
+            } else {
+                return semitone + self._flat;
+            }
+        }
+    }
+
+    /**
      * Extract the tonality, replace #, b, H and italic names
      *
      * @static
      * @private
+     * @method _tonality
      *
      * @param {string} str
      *
-     * @return {string}
+     * @returns {string}
      */
     self._tonality = function(str) {
         str = typeof str == 'string' ? str : 'Am';
@@ -188,58 +159,33 @@
      *
      * @static
      * @private
+     * @method _modifiers
      *
      * @param {string} str
      *
-     * @return {object}
+     * @returns {object}
      */
     self._modifiers = function(str) {
         return str.match(/(\+|\-|\/|add|aug|dim|maj|sus)(\d{0,2})/g);
     }
 
     /**
-     * 
-     *
-     * @static
-     * @private
-     *
-     * @param {string} modify
-     * @param {string} modify
-     *
-     * @return {object}
-     */
-    self._change = function(semitone, modify) {
-        if (modify == 'aug') {
-            if (semitone.match(self._flat)) {
-                return semitone.replace(self._flat, self._bekar);
-            } else {
-                return semitone + self._sharp;
-            }
-        } else if (modify == 'dim') {
-            if (semitone.match(self._sharp)) {
-                return semitone.replace(self._sharp, self._bekar);
-            } else {
-                return semitone + self._flat;
-            }
-        }
-    }
-
-    /**
      * Build a chord in a given tonality
      *
      * @static
+     * @method chord
      *
-     * @param {string}           full
-     * @param {undefined|string} type
+     * @param {string}  full
+     * @param {string=} type
      *
-     * @return {string|object}
+     * @returns {string|object}
      *
-     * http://music-education.ru/tri-vida-mazhora/
-     * http://music-education.ru/tri-vida-minora/
+     * @see http://music-education.ru/tri-vida-mazhora/
+     * @see http://music-education.ru/tri-vida-minora/
      *
-     * http://www.music-theory.ru/index.php?option=com_content&view=article&id=174&Itemid=244&lang=ru
-     * http://www.music-theory.ru/index.php?option=com_content&view=article&id=45&Itemid=248&lang=ru
-     * http://www.music-theory.ru/index.php?option=com_content&view=article&id=54&Itemid=249&lang=ru
+     * @see http://www.music-theory.ru/index.php?option=com_content&view=article&id=174&Itemid=244&lang=ru
+     * @see http://www.music-theory.ru/index.php?option=com_content&view=article&id=45&Itemid=248&lang=ru
+     * @see http://www.music-theory.ru/index.php?option=com_content&view=article&id=54&Itemid=249&lang=ru
      */
     self.chord = function(full, type) {
         var
@@ -335,7 +281,7 @@
                     // Add
                     case '/':
                     case 'add':
-                        schema.push(chromatic[self._index(scale[step], chromatic)]);
+                        schema.push(chromatic.indexOf(scale[step]))
                     break;
 
                     // Suspend
@@ -369,11 +315,12 @@
      * Alter the chord or the interval
      *
      * @static
+     * @method alter
      *
      * @param {object} notes
      * @param {number} from
      *
-     * @return {string|object}
+     * @returns {string|object}
      */
     self.alter = function(notes, from) {
         if (typeof notes != 'object') {
@@ -390,11 +337,12 @@
      * Get the clefs list
      *
      * @static
+     * @method clefs
      *
-     * @param {string}            tonality
-     * @param {undefined|boolean} _tech
+     * @param {string}   tonality
+     * @param {boolean=} _tech
      *
-     * @return {string|object}
+     * @returns {string|object}
      */
     self.clefs = function(tonality, _tech) {
         tonality = _tech ? tonality : self._tonality(tonality);
@@ -423,13 +371,14 @@
      * Build an interval from a given tonic
      *
      * @static
+     * @method scale
      *
-     * @param {string|object}     tonality
-     * @param {string}            type
-     * @param {number}            octaves
-     * @param {undefined|boolean} _tech
+     * @param {string|object} tonality
+     * @param {string}        type
+     * @param {number}        octaves
+     * @param {boolean}       [_tech]
      *
-     * @return {object}
+     * @returns {object}
      */
     self.scale = function(tonality, type, octaves, _tech) {
         type     = typeof type == 'string' && type.match(/^(natural|harmonic|melodic)$/) ?
@@ -493,12 +442,13 @@
      * Tonalities degrees
      *
      * @static
+     * @method degrees
      *
-     * @param {string}            tonality
-     * @param {undefined|string}  type
-     * @param {undefined|boolean} _tech
+     * @param {string}   tonality
+     * @param {string=}  type
+     * @param {boolean=} _tech
      *
-     * @return {object}
+     * @returns {object}
      */
     self.degrees = function(tonality, type, _tech) {
         tonality = _tech ? tonality : self._tonality(tonality);
@@ -528,11 +478,12 @@
      * Build an interval from a given tonic
      *
      * @static
+     * @method interval
      *
-     * @param {string}            full
-     * @param {undefined|boolean} type
+     * @param {string}   full
+     * @param {boolean=} type
      *
-     * @return {object}
+     * @returns {object}
      */
     self.interval = function(full, type) {
         var
@@ -555,7 +506,7 @@
         // For non single tone intervals
         if (step > 0) {
             // Add the upper semitone position
-            schema[1] = self._index(scale[step], chromatic);
+            schema[1] = chromatic.indexOf(scale[step]);
 
             if (modifiers) {
                 // It's not a chord so there's no need to have
@@ -594,11 +545,12 @@
      * Get a relative tonality
      *
      * @static
+     * @method relative
      *
-     * @param {string}            tonality
-     * @param {undefined|boolean} _tech
+     * @param {string}   tonality
+     * @param {boolean=} _tech
      *
-     * @return {string}
+     * @returns {string}
      */
     self.relative = function(tonality, _tech) {
         tonality = _tech ? tonality : self._tonality(tonality);
@@ -618,12 +570,13 @@
      * Get the 12 chromatic semitones
      *
      * @static
+     * @method chromatic
      *
-     * @param {string}            tonality
-     * @param {number}            octaves
-     * @param {undefined|boolean} _tech
+     * @param {string}   tonality
+     * @param {number}   octaves
+     * @param {boolean=} _tech
      *
-     * @return {string|object}
+     * @returns {string|object}
      */
     self.chromatic = function(tonality, octaves, _tech) {
         octaves  = (typeof octaves == 'number' && octaves > 0) ?
@@ -700,10 +653,11 @@
      * Get a quint circle
      *
      * @static
+     * @method tonalities
      *
-     * @param {undefined|boolean} _tech
+     * @param {boolean=} _tech
      *
-     * @return {object}
+     * @returns {object}
      */
     self.tonalities = function(_tech) {
         var
