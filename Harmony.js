@@ -376,7 +376,7 @@
      * @param {string|object} tonality
      * @param {string}        type
      * @param {number}        octaves
-     * @param {boolean}       [_tech]
+     * @param {boolean=}      _tech
      *
      * @returns {object}
      */
