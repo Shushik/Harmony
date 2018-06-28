@@ -4,14 +4,11 @@
  * @class   Harmony
  * @author  Shushik <silkleopard@yandex.ru>
  * @version 4.0
- * @license MIT
- *
- * @class Harmony
  */
 var Harmony = Harmony || (function() {
 
     // Class definition
-    class self {
+    class Self {
 
         /**
          * Check if the tonality is minor or not
@@ -25,7 +22,7 @@ var Harmony = Harmony || (function() {
          * @returns {boolean}
          */
         static parseIsMinor(raw = 'Am', trust = false) {
-            raw = self.parseTonalityName(raw, trust);
+            raw = Self.parseTonalityName(raw, trust);
 
             return raw.match(/^[A-G][♭♯]?m/) ? true : false;
         }
@@ -41,7 +38,7 @@ var Harmony = Harmony || (function() {
          * @returns {string}
          */
         static parseChordName(raw = 'Am') {
-            raw = self.parseCommonSigns(raw);
+            raw = Self.parseCommonSigns(raw);
             return raw.replace(/^[A-G][♭♯]?/, '');
         }
 
@@ -56,7 +53,7 @@ var Harmony = Harmony || (function() {
          * @returns {string}
          */
         static parseChordModifiers(raw) {
-            raw = self.parseCommonSigns(raw);
+            raw = Self.parseCommonSigns(raw);
             return raw.match(/(\+|\-|\/|add|aug|dim|maj|sus)(\d{0,2})/g);
         }
 
@@ -83,8 +80,8 @@ var Harmony = Harmony || (function() {
             }
 
             return raw.
-                   replace(/#/, self._conf.sharp).
-                   replace(/b/, self._conf.flat).
+                   replace(/#/, Self._conf.sharp).
+                   replace(/b/, Self._conf.flat).
                    replace(/^H/, 'B');
         }
 
@@ -122,11 +119,11 @@ var Harmony = Harmony || (function() {
             }
 
             // Try to reach tonality name
-            raw = self.parseCommonSigns(raw);
+            raw = Self.parseCommonSigns(raw);
             raw = raw.match(/^([A-G][b#♭♯]?m?(aj)?)/g);
 
             // No need to go further
-            if (!raw[0]) {
+            if (!raw || !raw[0]) {
                 return 'Am';
             }
 
@@ -145,7 +142,7 @@ var Harmony = Harmony || (function() {
          * @returns {object}
          */
         static parseTonalityTonic(raw = 'Am', trust = false) {
-            raw = trust ? raw : self.parseTonalityName(raw);
+            raw = trust ? raw : Self.parseTonalityName(raw);
 
             return raw.replace(/m$/, '');
         }
@@ -161,17 +158,17 @@ var Harmony = Harmony || (function() {
          * @returns {object}
          */
         static getClefs(tonality = 'Am') {
-            tonality = self.parseTonalityName(tonality);
+            tonality = Self.parseTonalityName(tonality);
 
             var
                 type  = '',
-                count = self.countClefs(tonality),
+                count = Self.countClefs(tonality),
                 list  = null;
 
             // Tonality exists and has clefs
             if (count != -1) {
-                type = self._conf.tonalities[tonality] < 0 ? 'flat' : 'sharp';
-                list = self._conf.clefs[type].slice(0, count);
+                type = Self._conf.tonalities[tonality] < 0 ? 'flat' : 'sharp';
+                list = Self._conf.clefs[type].slice(0, count);
 
                 return list;
             }
@@ -190,10 +187,10 @@ var Harmony = Harmony || (function() {
          * @returns {object}
          */
         static countClefs(tonality = 'Am') {
-            tonality = self.parseTonalityName(tonality);
+            tonality = Self.parseTonalityName(tonality);
 
             var
-                clefs = tonality in self._conf.tonalities ? self._conf.tonalities[tonality] : -8;
+                clefs = tonality in Self._conf.tonalities ? Self._conf.tonalities[tonality] : -8;
 
             if (clefs != -8) {
                 if (clefs < 0) {
@@ -227,8 +224,8 @@ var Harmony = Harmony || (function() {
                 copy = notes.slice();
 
             while (--note > -1) {
-                if (self._conf.synonyms.flat[copy[note]]) {
-                    copy[note] = self._conf.synonyms.flat[copy[note]];
+                if (Self._conf.synonyms.flat[copy[note]]) {
+                    copy[note] = Self._conf.synonyms.flat[copy[note]];
                 }
             }
 
@@ -249,7 +246,7 @@ var Harmony = Harmony || (function() {
         static getDegrees(tonality = 'Am', type = 'natural') {
             var
                 name   = '',
-                scale  = self.getScale(tonality, type),
+                scale  = Self.getScale(tonality, type),
                 schema = {
                              tonic       : 0,
                              mediant     : 2,
@@ -280,10 +277,10 @@ var Harmony = Harmony || (function() {
          */
         static getRelative(tonality = 'Am') {
             var
-                scale = self.getChromaticScale(tonality);
+                scale = Self.getChromaticScale(tonality);
 
             // If minor tonality
-            if (self.parseIsMinor(tonality)) {
+            if (Self.parseIsMinor(tonality)) {
                 return scale[3];
             }
 
@@ -303,18 +300,18 @@ var Harmony = Harmony || (function() {
          * @returns {object}
          */
         static getScale(tonality = 'Am', type = 'natural', octaves = 1) {
-            tonality = self.parseTonalityName(tonality);
-            type     = self.parseTonalityType(type);
+            tonality = Self.parseTonalityName(tonality);
+            type     = Self.parseTonalityType(type);
 
             var
                 step      = 7,
-                minor     = self.parseIsMinor(tonality),
+                minor     = Self.parseIsMinor(tonality),
                 schema    = (
                                 minor ?
-                                self._conf.semitones.minor :
-                                self._conf.semitones.major
+                                Self._conf.semitones.minor :
+                                Self._conf.semitones.major
                             ).slice(),
-                chromatic = self.getChromaticScale(tonality);
+                chromatic = Self.getChromaticScale(tonality);
 
             // Change the schema for non-natural types of scales
             switch (type) {
@@ -369,18 +366,18 @@ var Harmony = Harmony || (function() {
          * @returns {object}
          */
         static getChromaticScale(tonality = 'Am', octaves = 1) {
-            tonality = self.parseTonalityName(tonality);
+            tonality = Self.parseTonalityName(tonality);
 
             var
                 check    = -1,
                 semitone = -1,
-                tonic    = self.parseTonalityTonic(tonality, true),
+                tonic    = Self.parseTonalityTonic(tonality, true),
                 type     = '',
-                clefs    = self.getClefs(tonality, true),
+                clefs    = Self.getClefs(tonality, true),
                 scale    = null;
 
-            type  = clefs.length && clefs[0].indexOf(self._conf.flat) != -1 ? 'flat' : 'sharp';
-            scale = self._conf.semitones[type].slice();
+            type  = clefs.length && clefs[0].indexOf(Self._conf.flat) != -1 ? 'flat' : 'sharp';
+            scale = Self._conf.semitones[type].slice();
 
             // Remove unnecessary semitones
             switch (type) {
@@ -443,17 +440,17 @@ var Harmony = Harmony || (function() {
          * @returns {object}
          */
         static getInterval(raw = 'Am', type = 'natural') {
-            type = self.parseTonalityType(type);
+            type = Self.parseTonalityType(type);
 
             var
-                minor     = self.parseIsMinor(raw),
+                minor     = Self.parseIsMinor(raw),
                 step      = 0,
-                interval  = self.parseChordName(raw),
-                tonality  = self.parseTonalityName(raw),
-                scale     = self.getScale(tonality, type, 2),
+                interval  = Self.parseChordName(raw),
+                tonality  = Self.parseTonalityName(raw),
+                scale     = Self.getScale(tonality, type, 2),
                 schema    = [0],
-                chromatic = self.getChromaticScale(tonality, 2),
-                modifiers = self.parseChordModifiers(interval);
+                chromatic = Self.getChromaticScale(tonality, 2),
+                modifiers = Self.parseChordModifiers(interval);
 
             step = interval.match(/^(m?)(\d{1,2})/);
             step = step ? step[2] - 1 : 0;
@@ -508,7 +505,7 @@ var Harmony = Harmony || (function() {
          * @returns {object}
          */
         static alterInterval(notes, offset) {
-            return self.alterChord(notes, offset);
+            return Self.alterChord(notes, offset);
         }
 
         /**
@@ -529,20 +526,20 @@ var Harmony = Harmony || (function() {
          * @see http://www.music-theory.ru/index.php?option=com_content&view=article&id=54&Itemid=249&lang=ru
          */
         static getChord(raw = 'Am', type = 'natural') {
-            type = self.parseTonalityType(type);
+            type = Self.parseTonalityType(type);
 
             var
-                minor     = self.parseIsMinor(raw),
+                minor     = Self.parseIsMinor(raw),
                 loop      = 0,
                 alter     = 0,
                 step      = null,
                 make      = '',
-                chord     = self.parseChordName(raw),
-                tonality  = self.parseTonalityName(raw),
-                scale     = self.getScale(tonality, type, 2),
+                chord     = Self.parseChordName(raw),
+                tonality  = Self.parseTonalityName(raw),
+                scale     = Self.getScale(tonality, type, 2),
                 schema    = [0],
-                chromatic = self.getChromaticScale(tonality, 2),
-                modifiers = self.parseChordModifiers(chord);
+                chromatic = Self.getChromaticScale(tonality, 2),
+                modifiers = Self.parseChordModifiers(chord);
 
             // Add the upper semitones for triad
             schema[1] = minor ? 3 : 4;
@@ -575,7 +572,7 @@ var Harmony = Harmony || (function() {
                 // Nineth or alterations
     /*
                 if (step == 9) {
-                    schema[4] = self._index(scale[8], chromatic);
+                    schema[4] = Self._index(scale[8], chromatic);
                 }
     */
             }
@@ -640,7 +637,7 @@ var Harmony = Harmony || (function() {
             }
 
             if (alter) {
-                return self.alterChord(schema, alter);
+                return Self.alterChord(schema, alter);
             }
 
             return schema;
@@ -678,7 +675,7 @@ var Harmony = Harmony || (function() {
      * @private
      * @member {object} _conf
      */
-    self._conf = {
+    Self._conf = {
         flat : '♭',
         bekar : '♮',
         sharp : '♯',
@@ -809,6 +806,6 @@ var Harmony = Harmony || (function() {
     };
 
     // Class export
-    return self;
+    return Self;
 
 })();
