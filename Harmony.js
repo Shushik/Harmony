@@ -28,6 +28,23 @@ var Harmony = Harmony || (function() {
         }
 
         /**
+         * Check if the tonality has flats
+         *
+         * @static
+         * @method parseHasFlats
+         *
+         * @param {string}  raw
+         * @param {boolean} trust
+         *
+         * @returns {boolean}
+         */
+        static parseHasFlats(raw = 'Am', trust = false) {
+            raw = Self.parseTonalityName(raw, trust);
+
+            return Self._conf.tonalities[raw] < 0 ? true : false;
+        }
+
+        /**
          * Extract the chord or interval name
          *
          * @static
@@ -201,35 +218,6 @@ var Harmony = Harmony || (function() {
             }
 
             return -1;
-        }
-
-        /**
-         * Alter chord
-         *
-         * @static
-         * @method alterChord
-         *
-         * @param {object} notes
-         * @param {string} notes
-         *
-         * @returns {object}
-         */
-        static translateClefs(notes, type = 'sharp') {
-            if (!notes || !(notes instanceof Array)) {
-                return null;
-            }
-
-            var
-                note = notes.length,
-                copy = notes.slice();
-
-            while (--note > -1) {
-                if (Self._conf.synonyms.flat[copy[note]]) {
-                    copy[note] = Self._conf.synonyms.flat[copy[note]];
-                }
-            }
-
-            return copy;
         }
 
         /**
@@ -415,7 +403,8 @@ var Harmony = Harmony || (function() {
             }
 
             // Get a tonic position and build a chromatic scale from a tonic
-            scale = Array.concat(scale.slice(tonic), scale.slice(0, tonic));
+            semitone = scale.indexOf(tonic);
+            scale = Array.concat(scale.slice(semitone), scale.slice(0, semitone));
 
             // Expand for needed number of octaves
             while (--octaves) {
@@ -666,6 +655,56 @@ var Harmony = Harmony || (function() {
             return [].concat(notes.slice(step), notes.slice(0, step));
         }
 
+        /**
+         * Get semitone synonym
+         *
+         * @static
+         * @method getSynonym
+         *
+         * @param {string} semitone
+         * @param {string|boolean} type
+         *
+         * @returns {string}
+         */
+        static getSynonym(semitone, type) {
+            type = type === 'flat' || type === 'true' ? 'flat' : 'sharp';
+
+            var
+                pos = this._conf.semitones[type].indexOf(semitone),
+                syn = -1;
+
+            // No need to go further
+            if (pos === -1) {
+                return '';
+            }
+
+            // Try to find similar semitone position
+            switch (type) {
+                case 'flat':
+                    switch (pos) {
+                        case 2:
+                            syn = 3;
+                            break;
+                        case 8:
+                            syn = 9;
+                            break;
+                    }
+                    break;
+                case 'sharp':
+                    switch (pos) {
+                        case 4:
+                            syn = 3;
+                            break;
+                        case 10:
+                            syn = 9;
+                            break;
+                    }
+                    break;
+            }
+
+            return this._conf.semitones[type][(syn !== -1 ? syn : pos)];
+        }
+
     }
 
     /**
@@ -698,26 +737,6 @@ var Harmony = Harmony || (function() {
                 'E♯',
                 'B♯'
             ]
-        },
-        synonyms : {
-            flat : {
-                'B♭' : 'A♯',
-                'E♭' : 'D♯',
-                'A♭' : 'G♯',
-                'D♭' : 'C♯',
-                'G♭' : 'F♯',
-                'C♭' : 'B',
-                'F♭' : 'E'
-            },
-            sharp : {
-                'F♯' : 'G♭',
-                'C♯' : 'D♭',
-                'G♯' : 'A♭',
-                'D♯' : 'E♭',
-                'A♯' : 'B♭',
-                'E♯' : 'F',
-                'B♯' : 'C'
-            }
         },
         semitones : {
             flat : [
