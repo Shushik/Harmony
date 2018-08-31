@@ -209,7 +209,7 @@ var Harmony = Harmony || (function() {
             var
                 clefs = tonality in Self._conf.tonalities ? Self._conf.tonalities[tonality] : -8;
 
-            if (clefs != -8) {
+            if (clefs !== undefined) {
                 if (clefs < 0) {
                     clefs *= -1;
                 }
