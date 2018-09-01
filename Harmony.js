@@ -71,7 +71,7 @@ var Harmony = Harmony || (function() {
          */
         static parseChordModifiers(raw) {
             raw = Self.parseCommonSigns(raw);
-            return raw.match(/(\+|\-|\/|add|aug|dim|maj|sus)([A-G]|\d{0,2})/g);
+            return raw.match(/(\+|\-|\/|add|aug|dim|maj|sus)([A-G](♭|♯)?|\d{0,2})/g);
         }
 
         /**
@@ -577,10 +577,11 @@ var Harmony = Harmony || (function() {
 
                 // Append modifiers
                 while (--loop > -1) {
-                    make = modifiers[loop].replace(/\d+|[A-G]/, '');
+
+                    make = modifiers[loop].replace(/\d+|[A-G](♭|♯)?/, '');
                     step = modifiers[loop].replace(/\D*/, '') - 0;
 
-                    if (step = modifiers[loop].match(/[A-G]/)) {
+                    if (step = modifiers[loop].match(/[A-G](♭|♯)?/)) {
                         step = step[0];
                     } else {
                         step = modifiers[loop].replace(/\D*/, '') - 0;
