@@ -71,7 +71,7 @@ var Harmony = Harmony || (function() {
          */
         static parseChordModifiers(raw) {
             raw = Self.parseCommonSigns(raw);
-            return raw.match(/(\+|\-|\/|add|aug|dim|maj|sus)(\d{0,2})/g);
+            return raw.match(/(\+|\-|\/|add|aug|dim|maj|sus)([A-G]|\d{0,2})/g);
         }
 
         /**
@@ -541,7 +541,7 @@ var Harmony = Harmony || (function() {
                 step = step[3];
 
                 // For alterated chords
-                if (step == 6 || step == 65) {
+                if (step == 65) {
                     alter = 2;
                 } else if (step == 64 || step == 34) {
                     alter = 3;
@@ -555,6 +555,12 @@ var Harmony = Harmony || (function() {
                         schema[3] = minor ? 11 : 9;
                     } else {
                         schema[3] = 10;
+                    }
+                } else if (step == 6) {
+                    if (type != 'natural') {
+                        schema[3] = minor ? 10 : 8;
+                    } else {
+                        schema[3] = 9;
                     }
                 }
 
@@ -571,13 +577,21 @@ var Harmony = Harmony || (function() {
 
                 // Append modifiers
                 while (--loop > -1) {
-                    make = modifiers[loop].replace(/\d+/, '');
+                    make = modifiers[loop].replace(/\d+|[A-G]/, '');
                     step = modifiers[loop].replace(/\D*/, '') - 0;
+
+                    if (step = modifiers[loop].match(/[A-G]/)) {
+                        step = step[0];
+                    } else {
+                        step = modifiers[loop].replace(/\D*/, '') - 0;
+                    }
 
                     // The «add» case has it's own steps behavior
                     if (make == '/' || make == 'add') {
-                        step = step + 1;
-                        step = !isNaN(step) ? step : schema.length;
+                        if (typeof step == 'number') {
+                            step = step + 1;
+                            step = !isNaN(step) ? step : schema.length;
+                        }
                     } else {
                         step = (step ? step - 2 : (schema.length - 1));
                         step = step - Math.ceil(step / 3);
@@ -602,7 +616,11 @@ var Harmony = Harmony || (function() {
                         // Add
                         case '/':
                         case 'add':
-                            schema.push(chromatic.indexOf(scale[step]))
+                            if (typeof step == 'string') {
+                                schema.unshift(chromatic.indexOf(step));
+                            } else {
+                                schema.unshift(chromatic.indexOf(scale[step]));
+                            }
                         break;
 
                         // Suspend
