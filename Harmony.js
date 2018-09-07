@@ -606,23 +606,31 @@ var Harmony = Harmony || (function() {
                         case 'aug':
                         case 'maj':
                             schema[step] = schema[step] + 1;
-                        break;
+                            break;
 
                         // Diminish
                         case '-':
                         case 'dim':
                             schema[step] = schema[step] - 1;
-                        break;
+                            break;
 
-                        // Add
+                        // Slash
                         case '/':
-                        case 'add':
                             if (typeof step == 'string') {
                                 schema.unshift(chromatic.indexOf(step));
                             } else {
                                 schema.unshift(chromatic.indexOf(scale[step]));
                             }
-                        break;
+                            break;
+
+                        // Add
+                        case 'add':
+                            if (typeof step == 'string') {
+                                schema.push(chromatic.indexOf(step));
+                            } else {
+                                schema.push(chromatic.indexOf(scale[step]));
+                            }
+                            break;
 
                         // Suspend
                         case 'sus':
@@ -631,7 +639,7 @@ var Harmony = Harmony || (function() {
                             } else {
                                 schema[1] = schema[1] + 1;
                             }
-                        break;
+                            break;
 
                     }
                 }
@@ -669,7 +677,7 @@ var Harmony = Harmony || (function() {
             }
 
             var
-                step = offset - 1;
+                step = offset;
 
             return [].concat(notes.slice(step), notes.slice(0, step));
         }
