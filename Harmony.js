@@ -404,11 +404,11 @@ var Harmony = Harmony || (function() {
 
             // Get a tonic position and build a chromatic scale from a tonic
             semitone = scale.indexOf(tonic);
-            scale = Array.concat(scale.slice(semitone), scale.slice(0, semitone));
+            scale = [].concat(scale.slice(semitone), scale.slice(0, semitone));
 
             // Expand for needed number of octaves
             while (--octaves) {
-                scale = Array.concat(scale, scale.slice(0, 12));
+                scale = [].concat(scale, scale.slice(0, 12));
             }
 
             // Add tonic to the end
