@@ -94,35 +94,35 @@ var Harmony = Harmony || (function() {
          */
         static get TONALITIES() {
             return {
-                'C♭'  : -7,
+                'C♭' : -7,
                 'A♭m' : -7,
-                'G♭'  : -6,
+                'G♭' : -6,
                 'E♭m' : -6,
-                'D♭'  : -5,
+                'D♭' : -5,
                 'B♭m' : -5,
-                'A♭'  : -4,
-                'Fm'  : -4,
-                'E♭'  : -3,
-                'Cm'  : -3,
-                'B♭'  : -2,
-                'Gm'  : -2,
-                'F'   : -1,
-                'Dm'  : -1,
-                'C'   : 0,
-                'Am'  : 0,
-                'G'   : 1,
-                'Em'  : 1,
-                'D'   : 2,
-                'Bm'  : 2,
-                'A'   : 3,
+                'A♭' : -4,
+                'Fm' : -4,
+                'E♭' : -3,
+                'Cm' : -3,
+                'B♭' : -2,
+                'Gm' : -2,
+                'F' : -1,
+                'Dm' : -1,
+                'C' : 0,
+                'Am' : 0,
+                'G' : 1,
+                'Em' : 1,
+                'D' : 2,
+                'Bm' : 2,
+                'A' : 3,
                 'F♯m' : 3,
-                'E'   : 4,
+                'E' : 4,
                 'C♯m' : 4,
-                'A♯'  : 5,
+                'A♯' : 5,
                 'G♯m' : 5,
-                'F♯'  : 6,
+                'F♯' : 6,
                 'D♯m' : 6,
-                'C♯'  : 7,
+                'C♯' : 7,
                 'A♯m' : 7
             };
         }
@@ -301,7 +301,7 @@ var Harmony = Harmony || (function() {
 
             // Tonality exists and has clefs
             if (count != -1) {
-                type = (Self.TONALITIES[tonality] < 0 ? 'flat' : 'sharp').toUpperCase();
+                type = (Self.TONALITIES[tonality] < 0 ? 'FLAT' : 'SHARP');
                 list = Self[type + '_CLEFS'].slice(0, count);
 
                 return list;
