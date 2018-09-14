@@ -12,7 +12,7 @@ var Harmony = Harmony || (function() {
 
         /**
          * @static
-         * @member {string} FLAT
+         * @const {string} FLAT
          */
         static get FLAT() {
             return '♭';
@@ -20,7 +20,7 @@ var Harmony = Harmony || (function() {
 
         /**
          * @static
-         * @member {object} FLAT_CLEFS
+         * @const {object} FLAT_CLEFS
          */
         static get FLAT_CLEFS() {
             return ['B♭', 'E♭', 'A♭', 'D♭', 'G♭', 'C♭', 'F♭'];
@@ -28,7 +28,7 @@ var Harmony = Harmony || (function() {
 
         /**
          * @static
-         * @member {object} FLAT_SEMITONES
+         * @const {object} FLAT_SEMITONES
          */
         static get FLAT_SEMITONES() {
             return [
@@ -39,7 +39,7 @@ var Harmony = Harmony || (function() {
 
         /**
          * @static
-         * @member {string} BEKAR
+         * @const {string} BEKAR
          */
         static get BEKAR() {
             return '♮';
@@ -47,7 +47,7 @@ var Harmony = Harmony || (function() {
 
         /**
          * @static
-         * @member {string} SHARP
+         * @const {string} SHARP
          */
         static get SHARP() {
             return '♯';
@@ -55,7 +55,7 @@ var Harmony = Harmony || (function() {
 
         /**
          * @static
-         * @member {object} SHARP_CLEFS
+         * @const {object} SHARP_CLEFS
          */
         static get SHARP_CLEFS() {
             return ['F♯', 'C♯', 'G♯', 'D♯', 'A♯', 'E♯', 'B♯'];
@@ -63,7 +63,7 @@ var Harmony = Harmony || (function() {
 
         /**
          * @static
-         * @member {object} SHARP_SEMITONES
+         * @const {object} SHARP_SEMITONES
          */
         static get SHARP_SEMITONES() {
             return [
@@ -74,7 +74,7 @@ var Harmony = Harmony || (function() {
 
         /**
          * @static
-         * @member {object} MAJOR_SEMITONES
+         * @const {object} MAJOR_SEMITONES
          */
         static get MAJOR_SEMITONES() {
             return [0, 2, 4, 5, 7, 9, 11];
@@ -82,7 +82,7 @@ var Harmony = Harmony || (function() {
 
         /**
          * @static
-         * @member {object} MINOR_SEMITONES
+         * @const {object} MINOR_SEMITONES
          */
         static get MINOR_SEMITONES() {
             return [0, 2, 3, 5, 7, 8, 10];
@@ -90,7 +90,7 @@ var Harmony = Harmony || (function() {
 
         /**
          * @static
-         * @member {object} TONALITIES
+         * @const {object} TONALITIES
          */
         static get TONALITIES() {
             return {
