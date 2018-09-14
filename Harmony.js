@@ -11,6 +11,123 @@ var Harmony = Harmony || (function() {
     class Self {
 
         /**
+         * @static
+         * @member {string} FLAT
+         */
+        static get FLAT() {
+            return '♭';
+        }
+
+        /**
+         * @static
+         * @member {object} FLAT_CLEFS
+         */
+        static get FLAT_CLEFS() {
+            return ['B♭', 'E♭', 'A♭', 'D♭', 'G♭', 'C♭', 'F♭'];
+        }
+
+        /**
+         * @static
+         * @member {object} FLAT_SEMITONES
+         */
+        static get FLAT_SEMITONES() {
+            return [
+                'A', 'B♭', 'B', 'C♭', 'C', 'D♭', 'D',
+                'E♭', 'E', 'F♭', 'F', 'G♭', 'G', 'A♭'
+            ];
+        }
+
+        /**
+         * @static
+         * @member {string} BEKAR
+         */
+        static get BEKAR() {
+            return '♮';
+        }
+
+        /**
+         * @static
+         * @member {string} SHARP
+         */
+        static get SHARP() {
+            return '♯';
+        }
+
+        /**
+         * @static
+         * @member {object} SHARP_CLEFS
+         */
+        static get SHARP_CLEFS() {
+            return ['F♯', 'C♯', 'G♯', 'D♯', 'A♯', 'E♯', 'B♯'];
+        }
+
+        /**
+         * @static
+         * @member {object} SHARP_SEMITONES
+         */
+        static get SHARP_SEMITONES() {
+            return [
+                'A', 'A♯', 'B', 'B♯', 'C', 'C♯', 'D',
+                'D♯', 'E', 'E♯', 'F', 'F♯', 'G', 'G♯'
+            ];
+        }
+
+        /**
+         * @static
+         * @member {object} MAJOR_SEMITONES
+         */
+        static get MAJOR_SEMITONES() {
+            return [0, 2, 4, 5, 7, 9, 11];
+        }
+
+        /**
+         * @static
+         * @member {object} MINOR_SEMITONES
+         */
+        static get MINOR_SEMITONES() {
+            return [0, 2, 3, 5, 7, 8, 10];
+        }
+
+        /**
+         * @static
+         * @member {object} TONALITIES
+         */
+        static get TONALITIES() {
+            return {
+                'C♭'  : -7,
+                'A♭m' : -7,
+                'G♭'  : -6,
+                'E♭m' : -6,
+                'D♭'  : -5,
+                'B♭m' : -5,
+                'A♭'  : -4,
+                'Fm'  : -4,
+                'E♭'  : -3,
+                'Cm'  : -3,
+                'B♭'  : -2,
+                'Gm'  : -2,
+                'F'   : -1,
+                'Dm'  : -1,
+                'C'   : 0,
+                'Am'  : 0,
+                'G'   : 1,
+                'Em'  : 1,
+                'D'   : 2,
+                'Bm'  : 2,
+                'A'   : 3,
+                'F♯m' : 3,
+                'E'   : 4,
+                'C♯m' : 4,
+                'A♯'  : 5,
+                'G♯m' : 5,
+                'F♯'  : 6,
+                'D♯m' : 6,
+                'C♯'  : 7,
+                'A♯m' : 7
+            };
+        }
+
+        /**
          * Check if the tonality is minor or not
          *
          * @static
@@ -41,7 +158,7 @@ var Harmony = Harmony || (function() {
         static parseHasFlats(raw = 'Am', trust = false) {
             raw = Self.parseTonalityName(raw, trust);
 
-            return Self._conf.tonalities[raw] < 0 ? true : false;
+            return Self.TONALITIES[raw] < 0 ? true : false;
         }
 
         /**
@@ -97,8 +214,8 @@ var Harmony = Harmony || (function() {
             }
 
             return raw.
-                   replace(/#/, Self._conf.sharp).
-                   replace(/b/, Self._conf.flat).
+                   replace(/#/, Self.SHARP).
+                   replace(/b/, Self.FLAT).
                    replace(/^H/, 'B');
         }
 
@@ -178,14 +295,14 @@ var Harmony = Harmony || (function() {
             tonality = Self.parseTonalityName(tonality);
 
             var
-                type  = '',
+                type = '',
                 count = Self.countClefs(tonality),
-                list  = null;
+                list = null;
 
             // Tonality exists and has clefs
             if (count != -1) {
-                type = Self._conf.tonalities[tonality] < 0 ? 'flat' : 'sharp';
-                list = Self._conf.clefs[type].slice(0, count);
+                type = (Self.TONALITIES[tonality] < 0 ? 'flat' : 'sharp').toUpperCase();
+                list = Self[type + '_CLEFS'].slice(0, count);
 
                 return list;
             }
@@ -207,7 +324,9 @@ var Harmony = Harmony || (function() {
             tonality = Self.parseTonalityName(tonality);
 
             var
-                clefs = tonality in Self._conf.tonalities ? Self._conf.tonalities[tonality] : -8;
+                clefs = tonality in Self.TONALITIES ?
+                        Self.TONALITIES[tonality] :
+                        -8;
 
             if (clefs !== undefined) {
                 if (clefs < 0) {
@@ -233,14 +352,14 @@ var Harmony = Harmony || (function() {
          */
         static getDegrees(tonality = 'Am', type = 'natural') {
             var
-                name   = '',
-                scale  = Self.getScale(tonality, type),
+                name = '',
+                scale = Self.getScale(tonality, type),
                 schema = {
-                             tonic       : 0,
-                             mediant     : 2,
-                             dominant    : 4,
-                             submediant  : 5,
-                             supertonic  : 1,
+                             tonic : 0,
+                             mediant : 2,
+                             dominant : 4,
+                             submediant : 5,
+                             supertonic : 1,
                              leadingnote : 6,
                              subdominant : 3
                          };
@@ -289,16 +408,16 @@ var Harmony = Harmony || (function() {
          */
         static getScale(tonality = 'Am', type = 'natural', octaves = 1) {
             tonality = Self.parseTonalityName(tonality);
-            type     = Self.parseTonalityType(type);
+            type = Self.parseTonalityType(type);
 
             var
-                step      = 7,
-                minor     = Self.parseIsMinor(tonality),
-                schema    = (
-                                minor ?
-                                Self._conf.semitones.minor :
-                                Self._conf.semitones.major
-                            ).slice(),
+                step = 7,
+                minor = Self.parseIsMinor(tonality),
+                schema  = (
+                              minor ?
+                              Self.MINOR_SEMITONES :
+                              Self.MAJOR_SEMITONES
+                          ).slice(),
                 chromatic = Self.getChromaticScale(tonality);
 
             // Change the schema for non-natural types of scales
@@ -357,19 +476,19 @@ var Harmony = Harmony || (function() {
             tonality = Self.parseTonalityName(tonality);
 
             var
-                check    = -1,
+                check = -1,
                 semitone = -1,
-                tonic    = Self.parseTonalityTonic(tonality, true),
-                type     = '',
-                clefs    = Self.getClefs(tonality, true),
-                scale    = null;
+                tonic = Self.parseTonalityTonic(tonality, true),
+                type = '',
+                clefs = Self.getClefs(tonality, true),
+                scale = null;
 
-            type  = clefs.length && clefs[0].indexOf(Self._conf.flat) != -1 ? 'flat' : 'sharp';
-            scale = Self._conf.semitones[type].slice();
+            type  = clefs.length && clefs[0].indexOf(Self.FLAT) != -1 ? 'FLAT' : 'SHARP';
+            scale = Self[type + '_SEMITONES'].slice();
 
             // Remove unnecessary semitones
             switch (type) {
-                case 'flat':
+                case 'FLAT':
                     // Remove B or C flat
                     if (clefs.indexOf('C♭') != -1) {
                         scale.splice(2, 1);
@@ -385,7 +504,7 @@ var Harmony = Harmony || (function() {
                     }
                     break;
 
-                case 'sharp':
+                case 'SHARP':
                     // Remove C or B sharp
                     if (clefs.length && clefs.indexOf('B♯') != -1) {
                         scale.splice(4, 1);
@@ -432,12 +551,12 @@ var Harmony = Harmony || (function() {
             type = Self.parseTonalityType(type);
 
             var
-                minor     = Self.parseIsMinor(raw),
-                step      = 0,
-                interval  = Self.parseChordName(raw),
-                tonality  = Self.parseTonalityName(raw),
-                scale     = Self.getScale(tonality, type, 2),
-                schema    = [0],
+                minor = Self.parseIsMinor(raw),
+                step = 0,
+                interval = Self.parseChordName(raw),
+                tonality = Self.parseTonalityName(raw),
+                scale = Self.getScale(tonality, type, 2),
+                schema = [0],
                 chromatic = Self.getChromaticScale(tonality, 2),
                 modifiers = Self.parseChordModifiers(interval);
 
@@ -518,15 +637,15 @@ var Harmony = Harmony || (function() {
             type = Self.parseTonalityType(type);
 
             var
-                minor     = Self.parseIsMinor(raw),
-                loop      = 0,
-                alter     = 0,
-                step      = null,
-                make      = '',
-                chord     = Self.parseChordName(raw),
-                tonality  = Self.parseTonalityName(raw),
-                scale     = Self.getScale(tonality, type, 2),
-                schema    = [0],
+                minor = Self.parseIsMinor(raw),
+                loop = 0,
+                alter = 0,
+                step = null,
+                make = '',
+                chord = Self.parseChordName(raw),
+                tonality = Self.parseTonalityName(raw),
+                scale = Self.getScale(tonality, type, 2),
+                schema = [0],
                 chromatic = Self.getChromaticScale(tonality, 2),
                 modifiers = Self.parseChordModifiers(chord);
 
@@ -694,10 +813,11 @@ var Harmony = Harmony || (function() {
          * @returns {string}
          */
         static getSynonym(semitone, type) {
-            type = type === 'flat' || type === 'true' ? 'flat' : 'sharp';
+            type = type === 'flat' || type === 'true' ? 'FLAT' : 'SHARP';
 
             var
-                pos = this._conf.semitones[type].indexOf(semitone),
+                alias = type + '_SEMITONES',
+                pos = Self[alias].indexOf(semitone),
                 syn = -1;
 
             // No need to go further
@@ -707,7 +827,7 @@ var Harmony = Harmony || (function() {
 
             // Try to find similar semitone position
             switch (type) {
-                case 'flat':
+                case 'FLAT':
                     switch (pos) {
                         case 2:
                             syn = 3;
@@ -717,7 +837,7 @@ var Harmony = Harmony || (function() {
                             break;
                     }
                     break;
-                case 'sharp':
+                case 'SHARP':
                     switch (pos) {
                         case 4:
                             syn = 3;
@@ -729,127 +849,10 @@ var Harmony = Harmony || (function() {
                     break;
             }
 
-            return this._conf.semitones[type][(syn !== -1 ? syn : pos)];
+            return Self[alias][(syn !== -1 ? syn : pos)];
         }
 
     }
-
-    /**
-     * Config
-     *
-     * @static
-     * @private
-     * @member {object} _conf
-     */
-    Self._conf = {
-        flat : '♭',
-        bekar : '♮',
-        sharp : '♯',
-        clefs : {
-            flat : [
-                'B♭',
-                'E♭',
-                'A♭',
-                'D♭',
-                'G♭',
-                'C♭',
-                'F♭'
-            ],
-            sharp : [
-                'F♯',
-                'C♯',
-                'G♯',
-                'D♯',
-                'A♯',
-                'E♯',
-                'B♯'
-            ]
-        },
-        semitones : {
-            flat : [
-                'A',
-                'B♭',
-                'B',
-                'C♭',
-                'C',
-                'D♭',
-                'D',
-                'E♭',
-                'E',
-                'F♭',
-                'F',
-                'G♭',
-                'G',
-                'A♭'
-            ],
-            sharp : [
-                'A',
-                'A♯',
-                'B',
-                'B♯',
-                'C',
-                'C♯',
-                'D',
-                'D♯',
-                'E',
-                'E♯',
-                'F',
-                'F♯',
-                'G',
-                'G♯'
-            ],
-            major : [
-                0,
-                2,
-                4,
-                5,
-                7,
-                9,
-                11
-            ],
-            minor : [
-                0,
-                2,
-                3,
-                5,
-                7,
-                8,
-                10
-            ]
-        },
-        tonalities : {
-            'C♭'  : -7,
-            'A♭m' : -7,
-            'G♭'  : -6,
-            'E♭m' : -6,
-            'D♭'  : -5,
-            'B♭m' : -5,
-            'A♭'  : -4,
-            'Fm'  : -4,
-            'E♭'  : -3,
-            'Cm'  : -3,
-            'B♭'  : -2,
-            'Gm'  : -2,
-            'F'   : -1,
-            'Dm'  : -1,
-            'C'   : 0,
-            'Am'  : 0,
-            'G'   : 1,
-            'Em'  : 1,
-            'D'   : 2,
-            'Bm'  : 2,
-            'A'   : 3,
-            'F♯m' : 3,
-            'E'   : 4,
-            'C♯m' : 4,
-            'A♯'  : 5,
-            'G♯m' : 5,
-            'F♯'  : 6,
-            'D♯m' : 6,
-            'C♯'  : 7,
-            'A♯m' : 7
-        }
-    };
 
     // Class export
     return Self;
