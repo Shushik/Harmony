@@ -157,7 +157,7 @@ const TONALITIES = {
     'A♯m': 7
 };
 
-class Self {
+export default class Self {
 
     /**
      * Check if the tonality is minor or not
@@ -863,5 +863,3 @@ class Self {
     }
 
 }
-
-export default Self;
