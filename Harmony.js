@@ -16,19 +16,29 @@ const DEFAULT_OCTAVES = 1;
 const SI_SYMBOL = 'B';
 
 /**
- * @const {string} FLAT
+ * @const {string} FLAT_SYMBOL
  */
 export const FLAT_SYMBOL = '♭';
 
 /**
- * @const {string} BEKAR
+ * @const {string} DOUBLE_FLAT_SYMBOL
+ */
+export const DOUBLE_FLAT_SYMBOL = '𝄫';
+
+/**
+ * @const {string} BEKAR_SYMBOL
  */
 export const BEKAR_SYMBOL = '♮';
 
 /**
- * @const {string} SHARP
+ * @const {string} SHARP_SYMBOL
  */
 export const SHARP_SYMBOL = '♯';
+
+/**
+ * @const {string} DOUBLE_SHARP_SYMBOL
+ */
+export const DOUBLE_SHARP_SYMBOL = '𝄪';
 
 /**
  * @const {string} MELODIC_TONALITY
